@@ -139,7 +139,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					body.Add(k, v)
 				}
 			} else {
-				return nil, ErrInvalidUrlFormEncodedBody
+				return nil, errors.New(ErrInvalidUrlFormEncodedBody.Error() + ": must be map[string]string")
 			}
 
 			// req.Header.Set("content-type", "application/x-www-form-urlencoded")
