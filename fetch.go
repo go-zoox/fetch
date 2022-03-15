@@ -3,12 +3,14 @@ package fetch
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 )
 
 type Fetch struct {
 	config *Config
+	Errors []error
 }
 
 func New() *Fetch {
@@ -56,14 +58,11 @@ func (f *Fetch) SetMethod(method string) *Fetch {
 		}
 	}
 
-	panic("Invalid method: " + method)
+	f.Errors = append(f.Errors, ErrInvalidMethod)
+	return f
 }
 
 func (f *Fetch) SetHeader(key, value string) *Fetch {
-	if f.config.Headers == nil {
-		panic("Headers not set")
-	}
-
 	f.config.Headers[key] = value
 	return f
 }
@@ -83,11 +82,16 @@ func (f *Fetch) SetBody(body ConfigBody) *Fetch {
 	return f
 }
 
-func (f *Fetch) Execute() *Response {
+func (f *Fetch) Execute() (*Response, error) {
+	if len(f.Errors) > 0 {
+		return nil, f.Errors[0]
+	}
+
 	client := &http.Client{}
 	req, err := http.NewRequest(f.config.Method, f.config.Url, nil)
 	if err != nil {
-		panic("error creating request: " + err.Error())
+		// panic("error creating request: " + err.Error())
+		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
 	}
 
 	for k, v := range f.config.Headers {
@@ -102,12 +106,14 @@ func (f *Fetch) Execute() *Response {
 
 	if f.config.Body != nil {
 		if f.config.Method == GET {
-			panic("Cannot set body for GET request")
+			// panic("Cannot set body for GET request")
+			return nil, ErrCannotSendBodyWithGet
 		}
 
 		body, err := json.Marshal(f.config.Body)
 		if err != nil {
-			panic("error marshalling body: " + err.Error())
+			// panic("error marshalling body: " + err.Error())
+			return nil, errors.New(ErrInvalidJSONBody.Error() + ": " + err.Error())
 		}
 
 		req.Header.Set("content-type", "application/json")
@@ -116,13 +122,15 @@ func (f *Fetch) Execute() *Response {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		panic("error sending request: " + err.Error())
+		// panic("error sending request: " + err.Error())
+		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic("error reading response: " + err.Error())
+		// panic("error reading response: " + err.Error())
+		return nil, errors.New(ErrReadingResponse.Error() + ": " + err.Error())
 	}
 
 	// fmt.Println("response: ", string(body))
@@ -131,7 +139,7 @@ func (f *Fetch) Execute() *Response {
 		Status:  resp.StatusCode,
 		Headers: resp.Header,
 		Body:    body,
-	}
+	}, nil
 }
 
 func (f *Fetch) Get(url string, config *Config) *Fetch {

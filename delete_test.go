@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Delete(t *testing.T) {
-	response := Delete("https://httpbin.zcorky.com/Delete", &Config{
+	response, _ := Delete("https://httpbin.zcorky.com/Delete", &Config{
 		Body: map[string]interface{}{
 			"foo":     "bar",
 			"foo2":    "bar2",
@@ -92,7 +92,7 @@ func Test_Delete(t *testing.T) {
 }
 
 func Test_Delete_With_Header(t *testing.T) {
-	response := Delete("https://httpbin.zcorky.com/Delete", &Config{
+	response, _ := Delete("https://httpbin.zcorky.com/Delete", &Config{
 		Headers: map[string]string{
 			"X-CUSTOM-VAR":   "custom-value",
 			"x-custom-var-2": "custom-value-2",
@@ -109,7 +109,7 @@ func Test_Delete_With_Header(t *testing.T) {
 }
 
 func Test_Delete_With_Query(t *testing.T) {
-	response := Delete("https://httpbin.zcorky.com/Delete", &Config{
+	response, _ := Delete("https://httpbin.zcorky.com/Delete", &Config{
 		Query: map[string]string{
 			"foo":  "bar",
 			"foo2": "bar2",

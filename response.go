@@ -2,6 +2,7 @@ package fetch
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/tidwall/gjson"
@@ -32,12 +33,12 @@ func (r *Response) Get(key string) gjson.Result {
 	return r.Value().Get(key)
 }
 
-func (r *Response) JSON() string {
+func (r *Response) JSON() (string, error) {
 	raw := r.String()
 	b, err := json.MarshalIndent(gjson.Parse(raw).Value(), "", "  ")
 	if err != nil {
-		panic("invalid json: " + raw)
+		return "", errors.New("invalid json: " + raw)
 	}
 
-	return string(b)
+	return string(b), nil
 }

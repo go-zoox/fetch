@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Post(t *testing.T) {
-	response := Post("https://httpbin.zcorky.com/post", &Config{
+	response, _ := Post("https://httpbin.zcorky.com/post", &Config{
 		Body: map[string]interface{}{
 			"foo":     "bar",
 			"foo2":    "bar2",
@@ -92,7 +92,7 @@ func Test_Post(t *testing.T) {
 }
 
 func Test_Post_With_Header(t *testing.T) {
-	response := Post("https://httpbin.zcorky.com/post", &Config{
+	response, _ := Post("https://httpbin.zcorky.com/post", &Config{
 		Headers: map[string]string{
 			"X-CUSTOM-VAR":   "custom-value",
 			"x-custom-var-2": "custom-value-2",
@@ -109,7 +109,7 @@ func Test_Post_With_Header(t *testing.T) {
 }
 
 func Test_Post_With_Query(t *testing.T) {
-	response := Post("https://httpbin.zcorky.com/post", &Config{
+	response, _ := Post("https://httpbin.zcorky.com/post", &Config{
 		Query: map[string]string{
 			"foo":  "bar",
 			"foo2": "bar2",

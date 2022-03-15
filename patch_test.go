@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Patch(t *testing.T) {
-	response := Patch("https://httpbin.zcorky.com/patch", &Config{
+	response, _ := Patch("https://httpbin.zcorky.com/patch", &Config{
 		Body: map[string]interface{}{
 			"foo":     "bar",
 			"foo2":    "bar2",
@@ -92,7 +92,7 @@ func Test_Patch(t *testing.T) {
 }
 
 func Test_Patch_With_Header(t *testing.T) {
-	response := Patch("https://httpbin.zcorky.com/patch", &Config{
+	response, _ := Patch("https://httpbin.zcorky.com/patch", &Config{
 		Headers: map[string]string{
 			"X-CUSTOM-VAR":   "custom-value",
 			"x-custom-var-2": "custom-value-2",
@@ -109,7 +109,7 @@ func Test_Patch_With_Header(t *testing.T) {
 }
 
 func Test_Patch_With_Query(t *testing.T) {
-	response := Patch("https://httpbin.zcorky.com/patch", &Config{
+	response, _ := Patch("https://httpbin.zcorky.com/patch", &Config{
 		Query: map[string]string{
 			"foo":  "bar",
 			"foo2": "bar2",

@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Put(t *testing.T) {
-	response := Put("https://httpbin.zcorky.com/put", &Config{
+	response, _ := Put("https://httpbin.zcorky.com/put", &Config{
 		Body: map[string]interface{}{
 			"foo":     "bar",
 			"foo2":    "bar2",
@@ -92,7 +92,7 @@ func Test_Put(t *testing.T) {
 }
 
 func Test_Put_With_Header(t *testing.T) {
-	response := Put("https://httpbin.zcorky.com/put", &Config{
+	response, _ := Put("https://httpbin.zcorky.com/put", &Config{
 		Headers: map[string]string{
 			"X-CUSTOM-VAR":   "custom-value",
 			"x-custom-var-2": "custom-value-2",
@@ -109,7 +109,7 @@ func Test_Put_With_Header(t *testing.T) {
 }
 
 func Test_Put_With_Query(t *testing.T) {
-	response := Put("https://httpbin.zcorky.com/put", &Config{
+	response, _ := Put("https://httpbin.zcorky.com/put", &Config{
 		Query: map[string]string{
 			"foo":  "bar",
 			"foo2": "bar2",

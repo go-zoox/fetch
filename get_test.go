@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Get(t *testing.T) {
-	response := Get("https://httpbin.zcorky.com/get")
+	response, _ := Get("https://httpbin.zcorky.com/get")
 
 	if response.Status != 200 {
 		t.Error("Expected status code 200, got", response.Status)
@@ -50,7 +50,7 @@ func Test_Get(t *testing.T) {
 }
 
 func Test_Get_With_Header(t *testing.T) {
-	response := Get("https://httpbin.zcorky.com/get", &Config{
+	response, _ := Get("https://httpbin.zcorky.com/get", &Config{
 		Headers: map[string]string{
 			"X-CUSTOM-VAR":   "custom-value",
 			"x-custom-var-2": "custom-value-2",
@@ -69,7 +69,7 @@ func Test_Get_With_Header(t *testing.T) {
 }
 
 func Test_Get_With_Query(t *testing.T) {
-	response := Get("https://httpbin.zcorky.com/get", &Config{
+	response, _ := Get("https://httpbin.zcorky.com/get", &Config{
 		Query: map[string]string{
 			"foo":  "bar",
 			"foo2": "bar2",
