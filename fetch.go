@@ -100,11 +100,9 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	// @TODO
-	// if _, ok := f.config.Body.(string); ok {
-	// 	req.Header.Set("Content-Type", "text/plain")
-	// } else {
-	// 	req.Header.Set("Content-Type", "application/json")
-	// }
+	if _, ok := f.config.Body.(string); ok {
+		req.Header.Set("Content-Type", "text/plain")
+	}
 
 	for k, v := range f.config.Headers {
 		req.Header.Set(k, v)
