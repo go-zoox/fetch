@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Delete(t *testing.T) {
-	response, _ := Delete("https://httpbin.zcorky.com/Delete", &Config{
+	response, err := Delete("https://httpbin.zcorky.com/Delete", &Config{
 		Body: map[string]interface{}{
 			"foo":     "bar",
 			"foo2":    "bar2",
@@ -21,6 +21,9 @@ func Test_Delete(t *testing.T) {
 			},
 		},
 	})
+	if err != nil {
+		t.Error(err)
+	}
 
 	if response.Status != 200 {
 		t.Error("Expected status code 200, got", response.Status)
@@ -92,12 +95,15 @@ func Test_Delete(t *testing.T) {
 }
 
 func Test_Delete_With_Header(t *testing.T) {
-	response, _ := Delete("https://httpbin.zcorky.com/Delete", &Config{
+	response, err := Delete("https://httpbin.zcorky.com/Delete", &Config{
 		Headers: map[string]string{
 			"X-CUSTOM-VAR":   "custom-value",
 			"x-custom-var-2": "custom-value-2",
 		},
 	})
+	if err != nil {
+		t.Error(err)
+	}
 
 	if response.Get("headers.x-custom-var").String() != "custom-value" {
 		t.Error("Expected x-custom-var custom-value, got", response.Get("headers.x-custom-var").String())
@@ -109,12 +115,15 @@ func Test_Delete_With_Header(t *testing.T) {
 }
 
 func Test_Delete_With_Query(t *testing.T) {
-	response, _ := Delete("https://httpbin.zcorky.com/Delete", &Config{
+	response, err := Delete("https://httpbin.zcorky.com/Delete", &Config{
 		Query: map[string]string{
 			"foo":  "bar",
 			"foo2": "bar2",
 		},
 	})
+	if err != nil {
+		t.Error(err)
+	}
 
 	if response.Get("query.foo").String() != "bar" {
 		t.Error("Expected foo bar, got", response.Get("query.foo").String())

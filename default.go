@@ -4,9 +4,9 @@ import "fmt"
 
 func DefaultConfig() *Config {
 	config := &Config{
-		Headers: make(ConfigHeaders),
-		Query:   make(ConfigQuery),
-		Params:  make(ConfigParams),
+		Headers: make(Headers),
+		Query:   make(Query),
+		Params:  make(Params),
 	}
 
 	config.Headers["user-agent"] = DefaultUserAgent()

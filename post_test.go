@@ -2,6 +2,7 @@ package fetch
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -122,5 +123,79 @@ func Test_Post_With_Query(t *testing.T) {
 
 	if response.Get("query.foo2").String() != "bar2" {
 		t.Error("Expected foo2 bar2, got", response.Get("query.foo2").String())
+	}
+}
+
+func Test_Post_With_UrlFormEncoded(t *testing.T) {
+	response, _ := Post("https://httpbin.zcorky.com/post", &Config{
+		Headers: map[string]string{
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		Body: map[string]string{
+			"foo":  "bar",
+			"foo2": "bar2",
+		},
+	})
+
+	// fmt.Println("response:", response.String())
+
+	if response.Get("body.foo").String() != "bar" {
+		t.Error("Expected foo bar, got", response.Get("body.foo").String())
+	}
+
+	if response.Get("body.foo2").String() != "bar2" {
+		t.Error("Expected foo2 bar2, got", response.Get("body.foo2").String())
+	}
+}
+
+func Test_Post_With_FormData(t *testing.T) {
+	response, err := Post("https://httpbin.zcorky.com/post", &Config{
+		Headers: map[string]string{
+			"Content-Type": "multipart/form-data",
+		},
+		Body: map[string]interface{}{
+			"foo":  "bar",
+			"foo2": "bar2",
+		},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	// fmt.Println("response:", response.String())
+
+	if response.Get("body.foo").String() != "bar" {
+		t.Error("Expected foo bar, got", response.Get("body.foo").String())
+	}
+
+	if response.Get("body.foo2").String() != "bar2" {
+		t.Error("Expected foo2 bar2, got", response.Get("body.foo2").String())
+	}
+}
+
+func Test_Post_With_FormData_Upload_File(t *testing.T) {
+	file, _ := os.Open("go.mod")
+
+	response, err := Post("https://httpbin.zcorky.com/upload", &Config{
+		Headers: map[string]string{
+			"Content-Type": "multipart/form-data",
+		},
+		Body: map[string]interface{}{
+			"foo":         "bar",
+			"thefilename": file,
+		},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	// fmt.Println("response:", response.String())
+
+	if response.Get("body.foo").String() != "bar" {
+		t.Error("Expected foo bar, got", response.Get("body.foo").String())
+	}
+
+	if response.Get("files.thefilename.name").String() != "go.mod" {
+		t.Error("Expected thefilename go.mod, got", response.Get("files.thefilename.name").String())
 	}
 }

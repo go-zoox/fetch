@@ -4,8 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
+	"net/url"
+	"os"
+	"strings"
 )
 
 type Fetch struct {
@@ -77,7 +82,7 @@ func (f *Fetch) SetParam(key, value string) *Fetch {
 	return f
 }
 
-func (f *Fetch) SetBody(body ConfigBody) *Fetch {
+func (f *Fetch) SetBody(body Body) *Fetch {
 	f.config.Body = body
 	return f
 }
@@ -94,8 +99,18 @@ func (f *Fetch) Execute() (*Response, error) {
 		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
 	}
 
+	// @TODO
+	// if _, ok := f.config.Body.(string); ok {
+	// 	req.Header.Set("Content-Type", "text/plain")
+	// } else {
+	// 	req.Header.Set("Content-Type", "application/json")
+	// }
+
 	for k, v := range f.config.Headers {
 		req.Header.Set(k, v)
+	}
+	if req.Header.Get("content-type") == "" {
+		req.Header.Set("content-type", "application/json")
 	}
 
 	query := req.URL.Query()
@@ -110,14 +125,74 @@ func (f *Fetch) Execute() (*Response, error) {
 			return nil, ErrCannotSendBodyWithGet
 		}
 
-		body, err := json.Marshal(f.config.Body)
-		if err != nil {
-			// panic("error marshalling body: " + err.Error())
-			return nil, errors.New(ErrInvalidJSONBody.Error() + ": " + err.Error())
-		}
+		if strings.Contains(req.Header.Get("Content-Type"), "application/json") {
+			body, err := json.Marshal(f.config.Body)
+			if err != nil {
+				// panic("error marshalling body: " + err.Error())
+				return nil, errors.New(ErrInvalidJSONBody.Error() + ": " + err.Error())
+			}
 
-		req.Header.Set("content-type", "application/json")
-		req.Body = ioutil.NopCloser(bytes.NewReader(body))
+			// req.Header.Set("content-type", "application/json")
+			req.Body = ioutil.NopCloser(bytes.NewReader(body))
+		} else if strings.Contains(req.Header.Get("Content-Type"), "application/x-www-form-urlencoded") {
+			body := url.Values{}
+			if kv, ok := f.config.Body.(map[string]string); ok {
+				for k, v := range kv {
+					body.Add(k, v)
+				}
+			} else {
+				return nil, ErrInvalidUrlFormEncodedBody
+			}
+
+			// req.Header.Set("content-type", "application/x-www-form-urlencoded")
+			// req.Body = ioutil.NopCloser(bytes.NewReader(body))
+			req.Body = ioutil.NopCloser(strings.NewReader(body.Encode()))
+		} else if strings.Contains(req.Header.Get("Content-Type"), "multipart/form-data") {
+			if values, ok := f.config.Body.(map[string]interface{}); ok {
+				var b bytes.Buffer
+				w := multipart.NewWriter(&b)
+				for k, v := range values {
+					if v == nil {
+						continue
+					}
+
+					var fw io.Writer
+					if text, ok := v.(string); ok {
+						if fw, err = w.CreateFormField(k); err != nil {
+							return nil, err
+						}
+
+						if _, err = io.Copy(fw, strings.NewReader(text)); err != nil {
+							return nil, err
+						}
+
+						continue
+					}
+
+					if file, ok := v.(*os.File); ok {
+						if fw, err = w.CreateFormFile(k, file.Name()); err != nil {
+							return nil, err
+						}
+
+						if _, err = io.Copy(fw, file); err != nil {
+							return nil, err
+						}
+						continue
+					}
+				}
+				w.Close()
+				req.Header.Set("content-type", w.FormDataContentType())
+				req.Body = ioutil.NopCloser(&b)
+			} else {
+				return nil, ErrInvalidBodyMultipart
+			}
+		} else {
+			if _, ok := f.config.Body.(string); !ok {
+				return nil, ErrorInvalidBody
+			}
+
+			req.Body = ioutil.NopCloser(bytes.NewReader([]byte(f.config.Body.(string))))
+		}
 	}
 
 	resp, err := client.Do(req)
