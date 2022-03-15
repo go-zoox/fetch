@@ -153,7 +153,7 @@ func Test_Post_With_FormData(t *testing.T) {
 		Headers: map[string]string{
 			"Content-Type": "multipart/form-data",
 		},
-		Body: map[string]interface{}{
+		Body: map[string]string{
 			"foo":  "bar",
 			"foo2": "bar2",
 		},

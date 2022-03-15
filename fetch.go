@@ -181,8 +181,26 @@ func (f *Fetch) Execute() (*Response, error) {
 				w.Close()
 				req.Header.Set("content-type", w.FormDataContentType())
 				req.Body = ioutil.NopCloser(&b)
+			} else if values, ok := f.config.Body.(map[string]string); ok {
+				var b bytes.Buffer
+				w := multipart.NewWriter(&b)
+				for k, v := range values {
+					var fw io.Writer
+					if fw, err = w.CreateFormField(k); err != nil {
+						return nil, err
+					}
+
+					if _, err = io.Copy(fw, strings.NewReader(v)); err != nil {
+						return nil, err
+					}
+
+					continue
+				}
+				w.Close()
+				req.Header.Set("content-type", w.FormDataContentType())
+				req.Body = ioutil.NopCloser(&b)
 			} else {
-				return nil, ErrInvalidBodyMultipart
+				return nil, errors.New(ErrInvalidBodyMultipart.Error() + ": must be map[string]interface{} or map[string]string")
 			}
 		} else {
 			if _, ok := f.config.Body.(string); !ok {
