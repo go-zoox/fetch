@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 type Fetch struct {
@@ -69,11 +70,28 @@ func (f *Fetch) SetParam(key, value string) *Fetch {
 	return f
 }
 
-func (f *Fetch) SetBody(body Body) *Fetch {
+func (f *Fetch) SetBody(body ConfigBody) *Fetch {
 	f.config.Body = body
 	return f
 }
 
+//
+func (f *Fetch) SetBaseURL(url string) *Fetch {
+	f.config.BaseURL = url
+	return f
+}
+
+func (f *Fetch) SetTimeout(timeout time.Duration) *Fetch {
+	f.config.Timeout = timeout
+	return f
+}
+
+func (f *Fetch) SetUserAgent(userAgent string) *Fetch {
+	f.SetHeader("user-agent", userAgent)
+	return f
+}
+
+//
 func (f *Fetch) Execute() (*Response, error) {
 	if len(f.Errors) > 0 {
 		return nil, f.Errors[0]

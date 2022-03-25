@@ -187,6 +187,7 @@ func Test_Post_With_FormData_Upload_File(t *testing.T) {
 	})
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	// fmt.Println("response:", response.String())

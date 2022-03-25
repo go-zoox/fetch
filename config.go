@@ -8,10 +8,10 @@ import (
 type Config struct {
 	Url     string
 	Method  string
-	Headers Headers
-	Query   Query
-	Params  Params
-	Body    Body
+	Headers ConfigHeaders
+	Query   ConfigQuery
+	Params  ConfigParams
+	Body    ConfigBody
 	//
 	BaseURL string
 	Timeout time.Duration
@@ -33,6 +33,7 @@ func (cfg *Config) Merge(config *Config) {
 	if config.Headers != nil {
 		for header := range config.Headers {
 			if _, ok := cfg.Headers[header]; !ok {
+				// fmt.Printf("%s origin(%s) => new(%s)", header, cfg.Headers[header], config.Headers[header])
 				cfg.Headers[header] = config.Headers[header]
 			}
 		}
@@ -67,11 +68,11 @@ func (cfg *Config) Merge(config *Config) {
 	}
 }
 
-type Body interface{}
+type ConfigBody interface{}
 
-type Headers map[string]string
+type ConfigHeaders map[string]string
 
-func (h Headers) Get(key string) string {
+func (h ConfigHeaders) Get(key string) string {
 	for k, v := range h {
 		if strings.ToLower(k) == strings.ToLower(key) {
 			return strings.ToLower(v)
@@ -81,14 +82,14 @@ func (h Headers) Get(key string) string {
 	return ""
 }
 
-type Query map[string]string
+type ConfigQuery map[string]string
 
-func (h Query) Get(key string) string {
+func (h ConfigQuery) Get(key string) string {
 	return h[key]
 }
 
-type Params map[string]string
+type ConfigParams map[string]string
 
-func (h Params) Get(key string) string {
+func (h ConfigParams) Get(key string) string {
 	return h[key]
 }

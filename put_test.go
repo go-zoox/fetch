@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Put(t *testing.T) {
-	response, _ := Put("https://httpbin.zcorky.com/put", &Config{
+	response, err := Put("https://httpbin.zcorky.com/put", &Config{
 		Body: map[string]interface{}{
 			"foo":     "bar",
 			"foo2":    "bar2",
@@ -22,12 +22,18 @@ func Test_Put(t *testing.T) {
 		},
 	})
 
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	if response.Status != 200 {
 		t.Error("Expected status code 200, got", response.Status)
 	}
 
 	if response.Headers.Get("content-type") != "application/json; charset=utf-8" {
 		t.Error("Expected content-type application/json; charset=utf-8, got", response.Headers.Get("content-type"))
+		return
 	}
 
 	if response.Headers.Get("server") != "openresty" {
