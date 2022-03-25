@@ -233,6 +233,10 @@ func (f *Fetch) Execute() (*Response, error) {
 	}, nil
 }
 
+func (f *Fetch) Send() (*Response, error) {
+	return f.Execute()
+}
+
 func (f *Fetch) Get(url string, config *Config) *Fetch {
 	f.SetConfig(config)
 	f.SetMethod(GET)
