@@ -19,39 +19,21 @@ type Fetch struct {
 	Errors []error
 }
 
-func New() *Fetch {
+func New(cfg ...*Config) *Fetch {
 	config := DefaultConfig()
+	if len(cfg) > 1 {
+		panic("Too many arguments")
+	}
+
+	if len(cfg) == 1 {
+		config.Merge(cfg[0])
+	}
 
 	return &Fetch{config: config}
 }
 
 func (f *Fetch) SetConfig(config *Config) *Fetch {
-	for header := range config.Headers {
-		if _, ok := f.config.Headers[header]; !ok {
-			f.SetHeader(header, config.Headers[header])
-		}
-	}
-
-	for query := range config.Query {
-		if _, ok := f.config.Query[query]; !ok {
-			f.SetQuery(query, config.Query[query])
-		}
-	}
-
-	for param := range config.Params {
-		if _, ok := f.config.Params[param]; !ok {
-			f.SetParam(param, config.Params[param])
-		}
-	}
-
-	if config.BaseURL != "" {
-		f.config.BaseURL = config.BaseURL
-	}
-
-	if config.Body != nil {
-		f.SetBody(config.Body)
-	}
-
+	f.config.Merge(config)
 	return f
 }
 
@@ -109,7 +91,9 @@ func (f *Fetch) Execute() (*Response, error) {
 		url_ = u.String()
 	}
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: f.config.Timeout,
+	}
 	req, err := http.NewRequest(method_, url_, nil)
 	if err != nil {
 		// panic("error creating request: " + err.Error())
@@ -254,39 +238,43 @@ func (f *Fetch) Send() (*Response, error) {
 	return f.Execute()
 }
 
+func (f *Fetch) Clone() *Fetch {
+	return New(f.config)
+}
+
 func (f *Fetch) Get(url string, config *Config) *Fetch {
-	f.SetConfig(config)
-	f.SetMethod(GET)
-	f.SetUrl(url)
-	return f
+	return f.Clone().
+		SetConfig(config).
+		SetMethod(GET).
+		SetUrl(url)
 }
 
 func (f *Fetch) Post(url string, config *Config) *Fetch {
-	f.SetConfig(config)
-	f.SetMethod(POST)
-	f.SetUrl(url)
-	return f
+	return f.Clone().
+		SetConfig(config).
+		SetMethod(POST).
+		SetUrl(url)
 }
 
 func (f *Fetch) Put(url string, config *Config) *Fetch {
-	f.SetConfig(config)
-	f.SetMethod(PUT)
-	f.SetUrl(url)
-	return f
+	return f.Clone().
+		SetConfig(config).
+		SetMethod(PUT).
+		SetUrl(url)
 }
 
 func (f *Fetch) Patch(url string, config *Config) *Fetch {
-	f.SetConfig(config)
-	f.SetMethod(PATCH)
-	f.SetUrl(url)
-	return f
+	return f.Clone().
+		SetConfig(config).
+		SetMethod(PATCH).
+		SetUrl(url)
 }
 
 func (f *Fetch) Delete(url string, config *Config) *Fetch {
-	f.SetConfig(config)
-	f.SetMethod(DELETE)
-	f.SetUrl(url)
-	return f
+	return f.Clone().
+		SetConfig(config).
+		SetMethod(DELETE).
+		SetUrl(url)
 }
 
 // func (f *Fetch) JSON() *Response {
