@@ -9,6 +9,8 @@ type Config struct {
 	Query   Query
 	Params  Params
 	Body    Body
+	//
+	BaseURL string
 }
 
 type Body interface{}

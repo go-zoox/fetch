@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -41,6 +42,10 @@ func (f *Fetch) SetConfig(config *Config) *Fetch {
 		if _, ok := f.config.Params[param]; !ok {
 			f.SetParam(param, config.Params[param])
 		}
+	}
+
+	if config.BaseURL != "" {
+		f.config.BaseURL = config.BaseURL
 	}
 
 	if config.Body != nil {
@@ -92,8 +97,20 @@ func (f *Fetch) Execute() (*Response, error) {
 		return nil, f.Errors[0]
 	}
 
+	method_ := f.config.Method
+	url_ := f.config.Url
+	if f.config.BaseURL != "" {
+		u, err := url.Parse(f.config.BaseURL)
+		if err != nil {
+			return nil, errors.New("invalid base URL")
+		}
+
+		u.Path = path.Join(u.Path, url_)
+		url_ = u.String()
+	}
+
 	client := &http.Client{}
-	req, err := http.NewRequest(f.config.Method, f.config.Url, nil)
+	req, err := http.NewRequest(method_, url_, nil)
 	if err != nil {
 		// panic("error creating request: " + err.Error())
 		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
