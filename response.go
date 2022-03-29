@@ -42,3 +42,8 @@ func (r *Response) JSON() (string, error) {
 
 	return string(b), nil
 }
+
+func (r *Response) Unmarshal(v interface{}) error {
+	// return json.Unmarshal(r.Body, v)
+	return decode(v, r)
+}

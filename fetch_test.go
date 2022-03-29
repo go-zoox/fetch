@@ -34,3 +34,24 @@ func TestTimeout(t *testing.T) {
 		t.Error(errors.New("Expected timeout error, got nil"))
 	}
 }
+
+func TestResponseUnmarshal(t *testing.T) {
+	type body struct {
+		URL    string `name:"url"`
+		Method string `name:"method"`
+	}
+
+	var b body
+	response, _ := Get("https://httpbin.zcorky.com/get")
+	if err := response.Unmarshal(&b); err != nil {
+		t.Error(err)
+	}
+
+	if b.URL != "/get" {
+		t.Error("Expected url /get, got", b.URL)
+	}
+
+	if b.Method != "GET" {
+		t.Error("Expected method GET, got", b.Method)
+	}
+}
