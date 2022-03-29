@@ -37,8 +37,8 @@ func TestTimeout(t *testing.T) {
 
 func TestResponseUnmarshal(t *testing.T) {
 	type body struct {
-		URL    string `name:"url"`
-		Method string `name:"method"`
+		URL    string `alias:"url"`
+		Method string `alias:"method"`
 	}
 
 	var b body
