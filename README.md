@@ -7,8 +7,6 @@
 [![GitHub issues](https://img.shields.io/github/issues/go-zoox/fetch.svg)](https://github.com/go-zoox/fetch/issues)
 [![Release](https://img.shields.io/github/tag/go-zoox/fetch.svg?label=Release)](https://github.com/go-zoox/fetch/releases)
 
-Load application environment variables from a `.env` file into the current process.
-
 ## Installation
 To install the package, run:
 ```bash
