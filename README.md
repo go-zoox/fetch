@@ -18,7 +18,7 @@ go get github.com/go-zoox/fetch
 ## Getting Started
 
 ```go
-response, _ := Get("https://httpbin.zcorky.com/get")
+response, _ := fetch.Get("https://httpbin.zcorky.com/get")
 url := response.Get("url")
 method := response.Get("method")
 
