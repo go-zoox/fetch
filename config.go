@@ -18,9 +18,9 @@ type Config struct {
 }
 
 func (cfg *Config) Merge(config *Config) {
-	// if config == nil {
-	// 	return
-	// }
+	if config == nil {
+		return
+	}
 
 	if config.Url != "" {
 		cfg.Url = config.Url

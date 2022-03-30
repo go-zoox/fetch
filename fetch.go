@@ -34,9 +34,21 @@ func New(cfg ...*Config) *Fetch {
 	return &Fetch{config: config}
 }
 
-func (f *Fetch) SetConfig(config *Config) *Fetch {
-	f.config.Merge(config)
+func (f *Fetch) SetConfig(configs ...*Config) *Fetch {
+	for _, config := range configs {
+		f.config.Merge(config)
+	}
+
 	return f
+}
+
+// @TODO
+func (f *Fetch) getMethodConfig(config ...*Config) *Config {
+	if len(config) > 0 {
+		return config[0]
+	}
+
+	return &Config{}
 }
 
 func (f *Fetch) SetUrl(url string) *Fetch {
@@ -276,37 +288,37 @@ func (f *Fetch) Clone() *Fetch {
 	return New(f.config)
 }
 
-func (f *Fetch) Get(url string, config *Config) *Fetch {
+func (f *Fetch) Get(url string, config ...*Config) *Fetch {
 	return f.Clone().
-		SetConfig(config).
+		SetConfig(config...).
 		SetMethod(GET).
 		SetUrl(url)
 }
 
-func (f *Fetch) Post(url string, config *Config) *Fetch {
+func (f *Fetch) Post(url string, config ...*Config) *Fetch {
 	return f.Clone().
-		SetConfig(config).
+		SetConfig(config...).
 		SetMethod(POST).
 		SetUrl(url)
 }
 
-func (f *Fetch) Put(url string, config *Config) *Fetch {
+func (f *Fetch) Put(url string, config ...*Config) *Fetch {
 	return f.Clone().
-		SetConfig(config).
+		SetConfig(config...).
 		SetMethod(PUT).
 		SetUrl(url)
 }
 
-func (f *Fetch) Patch(url string, config *Config) *Fetch {
+func (f *Fetch) Patch(url string, config ...*Config) *Fetch {
 	return f.Clone().
-		SetConfig(config).
+		SetConfig(config...).
 		SetMethod(PATCH).
 		SetUrl(url)
 }
 
-func (f *Fetch) Delete(url string, config *Config) *Fetch {
+func (f *Fetch) Delete(url string, config ...*Config) *Fetch {
 	return f.Clone().
-		SetConfig(config).
+		SetConfig(config...).
 		SetMethod(DELETE).
 		SetUrl(url)
 }

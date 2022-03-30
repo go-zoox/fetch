@@ -59,7 +59,7 @@ func TestResponseUnmarshal(t *testing.T) {
 func TestSetBasicAuth(t *testing.T) {
 	f := New()
 
-	response, err := f.Get("https://httpbin.zcorky.com/basic-auth/user/passwd", &Config{}).
+	response, err := f.Get("https://httpbin.zcorky.com/basic-auth/user/passwd").
 		SetBasicAuth("user", "passwd").
 		Send()
 	if err != nil {
@@ -74,7 +74,7 @@ func TestSetBasicAuth(t *testing.T) {
 func TestSetBearToken(t *testing.T) {
 	f := New()
 
-	response, err := f.Get("https://httpbin.zcorky.com/headers", &Config{}).
+	response, err := f.Get("https://httpbin.zcorky.com/headers").
 		SetBearToken("token").
 		Send()
 	if err != nil {
