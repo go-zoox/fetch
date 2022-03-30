@@ -154,9 +154,6 @@ func (f *Fetch) Execute() (*Response, error) {
 	for k, v := range f.config.Headers {
 		req.Header.Set(k, v)
 	}
-	if req.Header.Get("content-type") == "" {
-		req.Header.Set("content-type", "application/json")
-	}
 
 	query := req.URL.Query()
 	for k, v := range f.config.Query {
@@ -170,6 +167,10 @@ func (f *Fetch) Execute() (*Response, error) {
 			return nil, ErrCannotSendBodyWithGet
 		}
 
+		if req.Header.Get("Content-Type") == "" {
+			req.Header.Set("Content-Type", "application/json")
+		}
+
 		if strings.Contains(req.Header.Get("Content-Type"), "application/json") {
 			body, err := json.Marshal(f.config.Body)
 			if err != nil {
@@ -177,7 +178,7 @@ func (f *Fetch) Execute() (*Response, error) {
 				return nil, errors.New(ErrInvalidJSONBody.Error() + ": " + err.Error())
 			}
 
-			// req.Header.Set("content-type", "application/json")
+			// req.Header.Set("Content-Type", "application/json")
 			req.Body = ioutil.NopCloser(bytes.NewReader(body))
 		} else if strings.Contains(req.Header.Get("Content-Type"), "application/x-www-form-urlencoded") {
 			body := url.Values{}
@@ -189,7 +190,7 @@ func (f *Fetch) Execute() (*Response, error) {
 				return nil, errors.New(ErrInvalidUrlFormEncodedBody.Error() + ": must be map[string]string")
 			}
 
-			// req.Header.Set("content-type", "application/x-www-form-urlencoded")
+			// req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 			// req.Body = ioutil.NopCloser(bytes.NewReader(body))
 			req.Body = ioutil.NopCloser(strings.NewReader(body.Encode()))
 		} else if strings.Contains(req.Header.Get("Content-Type"), "multipart/form-data") {
@@ -226,7 +227,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					}
 				}
 				w.Close()
-				req.Header.Set("content-type", w.FormDataContentType())
+				req.Header.Set("Content-Type", w.FormDataContentType())
 				req.Body = ioutil.NopCloser(&b)
 			} else if values, ok := f.config.Body.(map[string]string); ok {
 				var b bytes.Buffer
@@ -244,7 +245,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					continue
 				}
 				w.Close()
-				req.Header.Set("content-type", w.FormDataContentType())
+				req.Header.Set("Content-Type", w.FormDataContentType())
 				req.Body = ioutil.NopCloser(&b)
 			} else {
 				return nil, errors.New(ErrInvalidBodyMultipart.Error() + ": must be map[string]interface{} or map[string]string")
