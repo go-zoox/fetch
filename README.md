@@ -23,5 +23,8 @@ method := response.Get("method")
 fmt.Println(url, method)
 ```
 
+## Depencencies
+* [gjson](github.com/tidwall/gjson) - Get JSON Whenever You Need, you don't define type first。
+
 ## License
 GoZoox is released under the [MIT License](./LICENSE).

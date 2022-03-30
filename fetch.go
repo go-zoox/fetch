@@ -2,6 +2,7 @@ package fetch
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"io"
@@ -88,6 +89,21 @@ func (f *Fetch) SetTimeout(timeout time.Duration) *Fetch {
 
 func (f *Fetch) SetUserAgent(userAgent string) *Fetch {
 	f.SetHeader("user-agent", userAgent)
+	return f
+}
+
+func (f *Fetch) SetBasicAuth(username, password string) *Fetch {
+	f.SetAuthorization("Basic " + base64.RawStdEncoding.EncodeToString([]byte(username+":"+password)))
+	return f
+}
+
+func (f *Fetch) SetBearToken(token string) *Fetch {
+	f.SetAuthorization("Bearer " + token)
+	return f
+}
+
+func (f *Fetch) SetAuthorization(token string) *Fetch {
+	f.SetHeader("Authorization", token)
 	return f
 }
 

@@ -55,3 +55,37 @@ func TestResponseUnmarshal(t *testing.T) {
 		t.Error("Expected method GET, got", b.Method)
 	}
 }
+
+func TestSetBasicAuth(t *testing.T) {
+	f := New()
+
+	response, err := f.Get("https://httpbin.zcorky.com/basic-auth/user/passwd", &Config{}).
+		SetBasicAuth("user", "passwd").
+		Send()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if response.Status != 200 {
+		t.Error("Expected authenticated 200, got", response.Status)
+	}
+}
+
+func TestSetBearToken(t *testing.T) {
+	f := New()
+
+	response, err := f.Get("https://httpbin.zcorky.com/headers", &Config{}).
+		SetBearToken("token").
+		Send()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if response.Status != 200 {
+		t.Error("Expected authenticated 200, got", response.Status)
+	}
+
+	if response.Get("headers.authorization").String() != "Bearer token" {
+		t.Error("Expected Authorization Bearer token, got", response.Get("headers.authorization").String())
+	}
+}
