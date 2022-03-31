@@ -43,7 +43,7 @@ func TestResponseUnmarshal(t *testing.T) {
 
 	var b body
 	response, _ := Get("https://httpbin.zcorky.com/get")
-	if err := response.Unmarshal(&b); err != nil {
+	if err := response.UnmarshalJSON(&b); err != nil {
 		t.Error(err)
 	}
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/goccy/go-yaml"
 	"github.com/tidwall/gjson"
 )
 
@@ -43,7 +44,15 @@ func (r *Response) JSON() (string, error) {
 	return string(b), nil
 }
 
-func (r *Response) Unmarshal(v interface{}) error {
+// func (r *Response) Unmarshal(v interface{}) error {
+// 	return json.Unmarshal(r.Body, v)
+// 	// return decode(v, r)
+// }
+
+func (r *Response) UnmarshalJSON(v interface{}) error {
 	return json.Unmarshal(r.Body, v)
-	// return decode(v, r)
+}
+
+func (r *Response) UnmarshalYAML(v interface{}) error {
+	return yaml.Unmarshal(r.Body, v)
 }
