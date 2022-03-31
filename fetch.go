@@ -161,12 +161,14 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 	req.URL.RawQuery = query.Encode()
 
-	if f.config.Body != nil {
-		if f.config.Method == GET {
-			// panic("Cannot set body for GET request")
-			return nil, ErrCannotSendBodyWithGet
-		}
+	// if GET, ignore Body
+	if f.config.Body != nil && f.config.Method == GET {
+		// // panic("Cannot set body for GET request")
+		// return nil, ErrCannotSendBodyWithGet
+		f.config.Body = nil
+	}
 
+	if f.config.Body != nil {
 		if req.Header.Get("Content-Type") == "" {
 			req.Header.Set("Content-Type", "application/json")
 		}
