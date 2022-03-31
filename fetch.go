@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -125,22 +126,35 @@ func (f *Fetch) Execute() (*Response, error) {
 		return nil, f.Errors[0]
 	}
 
-	method_ := f.config.Method
-	url_ := f.config.Url
-	if f.config.BaseURL != "" {
+	methodOrigin := f.config.Method
+	fullUrl := f.config.Url
+	// @ORIGIN QUERY
+	var urlQueryOrigin url.Values
+	if strings.ContainsAny(fullUrl, "?") {
 		u, err := url.Parse(f.config.BaseURL)
+		if err != nil {
+			return nil, errors.New("failed to parsed origin url")
+		}
+
+		fmt.Println("RawQuery:", u.RawQuery, u.RawQuery != "")
+		urlQueryOrigin = u.Query()
+	}
+
+	// @BASEURL
+	if f.config.BaseURL != "" {
+		parsedBaseUrl, err := url.Parse(f.config.BaseURL)
 		if err != nil {
 			return nil, errors.New("invalid base URL")
 		}
 
-		u.Path = path.Join(u.Path, url_)
-		url_ = u.String()
+		parsedBaseUrl.Path = path.Join(parsedBaseUrl.Path, fullUrl)
+		fullUrl = parsedBaseUrl.String()
 	}
 
 	client := &http.Client{
 		Timeout: f.config.Timeout,
 	}
-	req, err := http.NewRequest(method_, url_, nil)
+	req, err := http.NewRequest(methodOrigin, fullUrl, nil)
 	if err != nil {
 		// panic("error creating request: " + err.Error())
 		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
@@ -156,6 +170,11 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	query := req.URL.Query()
+	// apply origin query
+	for k, v := range urlQueryOrigin {
+		query.Add(k, v[0])
+	}
+	// apply custom query
 	for k, v := range f.config.Query {
 		query.Add(k, v)
 	}

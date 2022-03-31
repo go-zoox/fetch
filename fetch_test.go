@@ -17,7 +17,7 @@ func TestBaseURL(t *testing.T) {
 	}
 
 	if response.Get("origin").String() != BaseURL {
-		t.Error("Expected BaseURL https://httpbin.zcorky.com, got", response.Get("origin").String())
+		t.Fatal("Expected BaseURL https://httpbin.zcorky.com, got", response.Get("origin").String())
 	}
 }
 
