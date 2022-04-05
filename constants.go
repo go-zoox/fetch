@@ -2,6 +2,7 @@ package fetch
 
 import "errors"
 
+var HEAD = "HEAD"
 var GET = "GET"
 var POST = "POST"
 var PUT = "PUT"
@@ -9,6 +10,7 @@ var DELETE = "DELETE"
 var PATCH = "PATCH"
 
 var METHODS = []string{
+	HEAD,
 	GET,
 	POST,
 	PUT,

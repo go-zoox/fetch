@@ -310,6 +310,13 @@ func (f *Fetch) Clone() *Fetch {
 	return New(f.config)
 }
 
+func (f *Fetch) Head(url string, config ...*Config) *Fetch {
+	return f.Clone().
+		SetConfig(config...).
+		SetMethod(HEAD).
+		SetUrl(url)
+}
+
 func (f *Fetch) Get(url string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
