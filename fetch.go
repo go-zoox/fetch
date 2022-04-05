@@ -57,6 +57,11 @@ func (f *Fetch) SetUrl(url string) *Fetch {
 	return f
 }
 
+func (f *Fetch) SetDownloadFilePath(filepath string) *Fetch {
+	f.config.DownloadFilePath = filepath
+	return f
+}
+
 func (f *Fetch) SetMethod(method string) *Fetch {
 	for m := range METHODS {
 		if method == METHODS[m] {
@@ -287,6 +292,24 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 	defer resp.Body.Close()
 
+	if f.config.DownloadFilePath != "" {
+		file, err := os.OpenFile(f.config.DownloadFilePath, os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
+
+		_, err = io.Copy(file, resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		return &Response{
+			Status:  resp.StatusCode,
+			Headers: resp.Header,
+		}, nil
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// panic("error reading response: " + err.Error())
@@ -350,6 +373,15 @@ func (f *Fetch) Delete(url string, config ...*Config) *Fetch {
 		SetConfig(config...).
 		SetMethod(DELETE).
 		SetUrl(url)
+}
+
+//
+func (f *Fetch) Download(url string, filepath string, config ...*Config) *Fetch {
+	return f.Clone().
+		SetConfig(config...).
+		SetMethod(GET).
+		SetUrl(url).
+		SetDownloadFilePath(filepath)
 }
 
 // func (f *Fetch) JSON() *Response {

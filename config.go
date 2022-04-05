@@ -15,6 +15,8 @@ type Config struct {
 	//
 	BaseURL string
 	Timeout time.Duration
+	//
+	DownloadFilePath string
 }
 
 func (cfg *Config) Merge(config *Config) {
