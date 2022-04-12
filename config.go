@@ -15,6 +15,9 @@ type Config struct {
 	//
 	BaseURL string
 	Timeout time.Duration
+	//
+	RetryTimes    int
+	RetryInterval time.Duration
 }
 
 func (cfg *Config) Merge(config *Config) {

@@ -8,5 +8,5 @@ func Get(url string, config ...interface{}) (*Response, error) {
 		return nil, ErrTooManyArguments
 	}
 
-	return New().Get(url, c).Execute()
+	return New().Get(url, c).Send()
 }

@@ -15,6 +15,8 @@ import (
 	"path"
 	"strings"
 	"time"
+
+	"github.com/go-zoox/retry"
 )
 
 type Fetch struct {
@@ -303,6 +305,26 @@ func (f *Fetch) Execute() (*Response, error) {
 }
 
 func (f *Fetch) Send() (*Response, error) {
+	if f.config.RetryTimes > 0 {
+		retryTimes := f.config.RetryTimes
+		retryInterval := f.config.RetryInterval
+		if retryInterval == 0 {
+			retryInterval = time.Second
+		}
+
+		var response *Response
+		var err error
+		err = retry.Retry(func() {
+			var err2 error
+			response, err2 = f.Execute()
+			if err != nil {
+				panic(err2)
+			}
+		}, retryTimes, retryInterval)
+
+		return response, err
+	}
+
 	return f.Execute()
 }
 
