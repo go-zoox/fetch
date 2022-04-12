@@ -313,11 +313,10 @@ func (f *Fetch) Send() (*Response, error) {
 		}
 
 		var response *Response
-		var err error
-		err = retry.Retry(func() {
+		err := retry.Retry(func() {
 			var err2 error
 			response, err2 = f.Execute()
-			if err != nil {
+			if err2 != nil {
 				panic(err2)
 			}
 		}, retryTimes, retryInterval)
