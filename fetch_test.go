@@ -2,6 +2,7 @@ package fetch
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -88,4 +89,18 @@ func TestSetBearToken(t *testing.T) {
 	if response.Get("headers.authorization").String() != "Bearer token" {
 		t.Error("Expected Authorization Bearer token, got", response.Get("headers.authorization").String())
 	}
+}
+
+func TestProxy(t *testing.T) {
+	f := New()
+
+	response, err := f.Get("https://httpbin.org/ip").
+		// SetProxy("http://127.0.0.1:17890").
+		Send()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println("response:", response.String())
 }

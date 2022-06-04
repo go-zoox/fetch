@@ -9,12 +9,15 @@ import (
 	"io"
 	"io/ioutil"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	"golang.org/x/net/proxy"
 )
 
 type Fetch struct {
@@ -125,6 +128,25 @@ func (f *Fetch) SetAuthorization(token string) *Fetch {
 	return f
 }
 
+// SetProxy sets the proxy
+//	support http, https, socks5
+//  example:
+//		http://127.0.0.1:17890
+//	  https://127.0.0.1:17890
+// 	  socks5://127.0.0.1:17890
+//
+func (f *Fetch) SetProxy(proxy string) *Fetch {
+	// validdate proxy
+	_, err := url.Parse(proxy)
+	if err != nil {
+		panic(fmt.Sprintf("invalid proxy %s", proxy))
+	}
+
+	f.config.Proxy = proxy
+
+	return f
+}
+
 //
 func (f *Fetch) Execute() (*Response, error) {
 	if len(f.Errors) > 0 {
@@ -159,6 +181,39 @@ func (f *Fetch) Execute() (*Response, error) {
 	client := &http.Client{
 		Timeout: f.config.Timeout,
 	}
+
+	// apply proxy
+	if f.config.Proxy != "" {
+		// fmt.Println("proxy:", f.config.Proxy)
+		proxyUrl, err := url.Parse(f.config.Proxy)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("invalid proxy: %s", f.config.Proxy))
+		}
+
+		switch proxyUrl.Scheme {
+		case "http", "https":
+			client.Transport = &http.Transport{
+				Proxy: http.ProxyURL(proxyUrl),
+				Dial: (&net.Dialer{
+					Timeout:   30 * time.Second,
+					KeepAlive: 30 * time.Second,
+				}).Dial,
+				TLSHandshakeTimeout: 10 * time.Second,
+			}
+		case "sock5":
+			dialer, err := proxy.FromURL(proxyUrl, proxy.Direct)
+			if err != nil {
+				return nil, errors.New(fmt.Sprintf("invalid socks5 proxy: %s", f.config.Proxy))
+			}
+
+			client.Transport = &http.Transport{
+				Proxy:               http.ProxyFromEnvironment,
+				Dial:                dialer.Dial,
+				TLSHandshakeTimeout: 10 * time.Second,
+			}
+		}
+	}
+
 	req, err := http.NewRequest(methodOrigin, fullUrl, nil)
 	if err != nil {
 		// panic("error creating request: " + err.Error())
