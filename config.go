@@ -17,6 +17,8 @@ type Config struct {
 	Timeout time.Duration
 	//
 	DownloadFilePath string
+	//
+	Proxy string
 }
 
 func (cfg *Config) Merge(config *Config) {
