@@ -54,8 +54,10 @@ func (r *Response) JSON() (string, error) {
 // 	// return decode(v, r)
 // }
 
-// UnmarshalJSON unmarshals body to json struct
-func (r *Response) UnmarshalJSON(v interface{}) error {
+// UnmarshalJson unmarshals body to json struct
+//
+// @TODO bug when lint (go vet) method UnmarshalJSON(v interface{}) error should have signature UnmarshalJSON([]byte) error
+func (r *Response) UnmarshalJson(v interface{}) error {
 	return json.Unmarshal(r.Body, v)
 }
 
