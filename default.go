@@ -1,5 +1,6 @@
 package fetch
 
+// DefaultConfig returns the default config
 func DefaultConfig() *Config {
 	config := &Config{
 		Headers: make(ConfigHeaders),
@@ -14,6 +15,7 @@ func DefaultConfig() *Config {
 	return config
 }
 
+// DefaultUserAgent returns the default user agent
 func DefaultUserAgent() string {
 	return UserAgent
 }

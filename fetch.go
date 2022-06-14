@@ -20,11 +20,13 @@ import (
 	"golang.org/x/net/proxy"
 )
 
+// Fetch is the Fetch Client
 type Fetch struct {
 	config *Config
 	Errors []error
 }
 
+// New creates a fetch client
 func New(cfg ...*Config) *Fetch {
 	config := DefaultConfig()
 	if len(cfg) > 1 {
@@ -38,6 +40,7 @@ func New(cfg ...*Config) *Fetch {
 	return &Fetch{config: config}
 }
 
+// SetConfig sets the config of fetch
 func (f *Fetch) SetConfig(configs ...*Config) *Fetch {
 	for _, config := range configs {
 		f.config.Merge(config)
@@ -55,16 +58,19 @@ func (f *Fetch) getMethodConfig(config ...*Config) *Config {
 	return &Config{}
 }
 
-func (f *Fetch) SetUrl(url string) *Fetch {
-	f.config.Url = url
+// SetURL sets the url of fetch
+func (f *Fetch) SetURL(url string) *Fetch {
+	f.config.URL = url
 	return f
 }
 
+// SetDownloadFilePath sets the download file path
 func (f *Fetch) SetDownloadFilePath(filepath string) *Fetch {
 	f.config.DownloadFilePath = filepath
 	return f
 }
 
+// SetMethod sets the method
 func (f *Fetch) SetMethod(method string) *Fetch {
 	for m := range METHODS {
 		if method == METHODS[m] {
@@ -77,52 +83,61 @@ func (f *Fetch) SetMethod(method string) *Fetch {
 	return f
 }
 
+// SetHeader sets the header key and value
 func (f *Fetch) SetHeader(key, value string) *Fetch {
 	f.config.Headers[key] = value
 	return f
 }
 
+// SetQuery sets the query key and value
 func (f *Fetch) SetQuery(key, value string) *Fetch {
 	f.config.Query[key] = value
 	return f
 }
 
+// SetParam sets the param key and value
 func (f *Fetch) SetParam(key, value string) *Fetch {
 	f.config.Params[key] = value
 	return f
 }
 
+// SetBody sets the body
 func (f *Fetch) SetBody(body ConfigBody) *Fetch {
 	f.config.Body = body
 	return f
 }
 
-//
+// SetBaseURL sets the base url
 func (f *Fetch) SetBaseURL(url string) *Fetch {
 	f.config.BaseURL = url
 	return f
 }
 
+// SetTimeout sets the timeout
 func (f *Fetch) SetTimeout(timeout time.Duration) *Fetch {
 	f.config.Timeout = timeout
 	return f
 }
 
+// SetUserAgent sets the user agent
 func (f *Fetch) SetUserAgent(userAgent string) *Fetch {
 	f.SetHeader("user-agent", userAgent)
 	return f
 }
 
+// SetBasicAuth sets the basic auth username and password
 func (f *Fetch) SetBasicAuth(username, password string) *Fetch {
 	f.SetAuthorization("Basic " + base64.RawStdEncoding.EncodeToString([]byte(username+":"+password)))
 	return f
 }
 
+// SetBearToken sets the bear token
 func (f *Fetch) SetBearToken(token string) *Fetch {
 	f.SetAuthorization("Bearer " + token)
 	return f
 }
 
+// SetAuthorization sets the authorization token
 func (f *Fetch) SetAuthorization(token string) *Fetch {
 	f.SetHeader("Authorization", token)
 	return f
@@ -147,17 +162,17 @@ func (f *Fetch) SetProxy(proxy string) *Fetch {
 	return f
 }
 
-//
+// Execute executes the request
 func (f *Fetch) Execute() (*Response, error) {
 	if len(f.Errors) > 0 {
 		return nil, f.Errors[0]
 	}
 
 	methodOrigin := f.config.Method
-	fullUrl := f.config.Url
+	fullURL := f.config.URL
 	// @ORIGIN QUERY
 	var urlQueryOrigin url.Values
-	if strings.ContainsAny(fullUrl, "?") {
+	if strings.ContainsAny(fullURL, "?") {
 		u, err := url.Parse(f.config.BaseURL)
 		if err != nil {
 			return nil, errors.New("failed to parsed origin url")
@@ -169,13 +184,13 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	// @BASEURL
 	if f.config.BaseURL != "" {
-		parsedBaseUrl, err := url.Parse(f.config.BaseURL)
+		parsedBaseURL, err := url.Parse(f.config.BaseURL)
 		if err != nil {
 			return nil, errors.New("invalid base URL")
 		}
 
-		parsedBaseUrl.Path = path.Join(parsedBaseUrl.Path, fullUrl)
-		fullUrl = parsedBaseUrl.String()
+		parsedBaseURL.Path = path.Join(parsedBaseURL.Path, fullURL)
+		fullURL = parsedBaseURL.String()
 	}
 
 	client := &http.Client{
@@ -185,15 +200,15 @@ func (f *Fetch) Execute() (*Response, error) {
 	// apply proxy
 	if f.config.Proxy != "" {
 		// fmt.Println("proxy:", f.config.Proxy)
-		proxyUrl, err := url.Parse(f.config.Proxy)
+		proxyURL, err := url.Parse(f.config.Proxy)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("invalid proxy: %s", f.config.Proxy))
+			return nil, fmt.Errorf("invalid proxy: %s", f.config.Proxy)
 		}
 
-		switch proxyUrl.Scheme {
+		switch proxyURL.Scheme {
 		case "http", "https":
 			client.Transport = &http.Transport{
-				Proxy: http.ProxyURL(proxyUrl),
+				Proxy: http.ProxyURL(proxyURL),
 				Dial: (&net.Dialer{
 					Timeout:   30 * time.Second,
 					KeepAlive: 30 * time.Second,
@@ -201,9 +216,9 @@ func (f *Fetch) Execute() (*Response, error) {
 				TLSHandshakeTimeout: 10 * time.Second,
 			}
 		case "sock5":
-			dialer, err := proxy.FromURL(proxyUrl, proxy.Direct)
+			dialer, err := proxy.FromURL(proxyURL, proxy.Direct)
 			if err != nil {
-				return nil, errors.New(fmt.Sprintf("invalid socks5 proxy: %s", f.config.Proxy))
+				return nil, fmt.Errorf("invalid socks5 proxy: %s", f.config.Proxy)
 			}
 
 			client.Transport = &http.Transport{
@@ -214,7 +229,7 @@ func (f *Fetch) Execute() (*Response, error) {
 		}
 	}
 
-	req, err := http.NewRequest(methodOrigin, fullUrl, nil)
+	req, err := http.NewRequest(methodOrigin, fullURL, nil)
 	if err != nil {
 		// panic("error creating request: " + err.Error())
 		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
@@ -268,7 +283,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					body.Add(k, v)
 				}
 			} else {
-				return nil, errors.New(ErrInvalidUrlFormEncodedBody.Error() + ": must be map[string]string")
+				return nil, errors.New(ErrInvalidURLFormEncodedBody.Error() + ": must be map[string]string")
 			}
 
 			// req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -380,62 +395,70 @@ func (f *Fetch) Execute() (*Response, error) {
 	}, nil
 }
 
+// Send sends the request
 func (f *Fetch) Send() (*Response, error) {
 	return f.Execute()
 }
 
+// Clone creates a new fetch
 func (f *Fetch) Clone() *Fetch {
 	return New(f.config)
 }
 
+// Head is http.head
 func (f *Fetch) Head(url string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
 		SetMethod(HEAD).
-		SetUrl(url)
+		SetURL(url)
 }
 
+// Get is http.get
 func (f *Fetch) Get(url string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
 		SetMethod(GET).
-		SetUrl(url)
+		SetURL(url)
 }
 
+// Post is http.post
 func (f *Fetch) Post(url string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
 		SetMethod(POST).
-		SetUrl(url)
+		SetURL(url)
 }
 
+// Put is http.put
 func (f *Fetch) Put(url string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
 		SetMethod(PUT).
-		SetUrl(url)
+		SetURL(url)
 }
 
+// Patch is http.patch
 func (f *Fetch) Patch(url string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
 		SetMethod(PATCH).
-		SetUrl(url)
+		SetURL(url)
 }
 
+// Delete is http.delete
 func (f *Fetch) Delete(url string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
 		SetMethod(DELETE).
-		SetUrl(url)
+		SetURL(url)
 }
 
-//
+// Download downloads file by url
 func (f *Fetch) Download(url string, filepath string, config ...*Config) *Fetch {
 	return f.Clone().
 		SetConfig(config...).
 		SetMethod(GET).
-		SetUrl(url).
+		SetURL(url).
 		SetDownloadFilePath(filepath)
 }
 

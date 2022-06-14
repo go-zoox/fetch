@@ -1,5 +1,6 @@
 package fetch
 
+// Head is a wrapper for the Head method of the Client
 func Head(url string, config ...interface{}) (*Response, error) {
 	c := &Config{}
 	if len(config) == 1 {

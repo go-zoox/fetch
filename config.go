@@ -5,8 +5,9 @@ import (
 	"time"
 )
 
+// Config is the configuration for the fetch
 type Config struct {
-	Url     string
+	URL     string
 	Method  string
 	Headers ConfigHeaders
 	Query   ConfigQuery
@@ -21,13 +22,14 @@ type Config struct {
 	Proxy string
 }
 
+// Merge merges the config with the given config
 func (cfg *Config) Merge(config *Config) {
 	if config == nil {
 		return
 	}
 
-	if config.Url != "" {
-		cfg.Url = config.Url
+	if config.URL != "" {
+		cfg.URL = config.URL
 	}
 
 	if config.Method != "" {
@@ -72,10 +74,13 @@ func (cfg *Config) Merge(config *Config) {
 	}
 }
 
+// ConfigBody is the body of the request
 type ConfigBody interface{}
 
+// ConfigHeaders is the headers of the request
 type ConfigHeaders map[string]string
 
+// Get returns the value of the given key
 func (h ConfigHeaders) Get(key string) string {
 	for k, v := range h {
 		if strings.ToLower(k) == strings.ToLower(key) {
@@ -86,14 +91,18 @@ func (h ConfigHeaders) Get(key string) string {
 	return ""
 }
 
+// ConfigQuery is the query of the request
 type ConfigQuery map[string]string
 
+// Get returns the value of the given key
 func (h ConfigQuery) Get(key string) string {
 	return h[key]
 }
 
+// ConfigParams is the params of the request
 type ConfigParams map[string]string
 
+// Get returns the value of the given key
 func (h ConfigParams) Get(key string) string {
 	return h[key]
 }
