@@ -1,6 +1,6 @@
 module github.com/go-zoox/fetch
 
-go 1.17
+go 1.18
 
 require (
 	github.com/goccy/go-yaml v1.9.5
