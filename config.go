@@ -72,6 +72,14 @@ func (cfg *Config) Merge(config *Config) {
 	if config.Timeout != 0 {
 		cfg.Timeout = config.Timeout
 	}
+
+	if config.DownloadFilePath != "" {
+		cfg.DownloadFilePath = config.DownloadFilePath
+	}
+
+	if config.Proxy != "Proxy" {
+		cfg.Proxy = config.Proxy
+	}
 }
 
 // ConfigBody is the body of the request
