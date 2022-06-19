@@ -96,6 +96,8 @@ func TestProxy(t *testing.T) {
 
 	response, err := f.Get("https://httpbin.org/ip").
 		// SetProxy("http://127.0.0.1:17890").
+		// SetProxy("https://127.0.0.1:17890").
+		// SetProxy("socks5://127.0.0.1:17890").
 		Send()
 
 	if err != nil {
