@@ -178,7 +178,6 @@ func (f *Fetch) Execute() (*Response, error) {
 			return nil, errors.New("failed to parsed origin url")
 		}
 
-		fmt.Println("RawQuery:", u.RawQuery, u.RawQuery != "")
 		urlQueryOrigin = u.Query()
 	}
 
@@ -215,7 +214,7 @@ func (f *Fetch) Execute() (*Response, error) {
 				}).Dial,
 				TLSHandshakeTimeout: 10 * time.Second,
 			}
-		case "sock5":
+		case "socks5":
 			dialer, err := proxy.FromURL(proxyURL, proxy.Direct)
 			if err != nil {
 				return nil, fmt.Errorf("invalid socks5 proxy: %s", f.config.Proxy)
