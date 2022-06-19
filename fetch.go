@@ -178,7 +178,6 @@ func (f *Fetch) Execute() (*Response, error) {
 			return nil, errors.New("failed to parsed origin url")
 		}
 
-		fmt.Println("RawQuery:", u.RawQuery, u.RawQuery != "")
 		urlQueryOrigin = u.Query()
 	}
 
