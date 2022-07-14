@@ -24,6 +24,8 @@ import (
 type Fetch struct {
 	config *Config
 	Errors []error
+	//
+	isConfigBuilt bool
 }
 
 // New creates a fetch client
@@ -162,10 +164,54 @@ func (f *Fetch) SetProxy(proxy string) *Fetch {
 	return f
 }
 
+func (f *Fetch) buildConfig() error {
+	if f.isConfigBuilt {
+		return nil
+	}
+	f.isConfigBuilt = true
+
+	newURL := f.config.URL
+	if f.config.Params != nil {
+		for k, v := range f.config.Params {
+			// support /:id/:name
+			newURL = strings.Replace(newURL, ":"+k, v, -1)
+			// support /{id}/{name}
+			newURL = strings.Replace(newURL, "{"+k+"}", v, -1)
+		}
+	}
+
+	// @BASEURL
+	if f.config.BaseURL != "" {
+		parsedBaseURL, err := url.Parse(f.config.BaseURL)
+		if err != nil {
+			return errors.New("invalid base URL")
+		}
+
+		parsedBaseURL.Path = path.Join(parsedBaseURL.Path, newURL)
+		newURL = parsedBaseURL.String()
+	}
+
+	f.config.URL = newURL
+	return nil
+}
+
+// Config returns the request config
+func (f *Fetch) Config() (*Config, error) {
+	if err := f.buildConfig(); err != nil {
+		return nil, err
+	}
+
+	return f.config, nil
+}
+
 // Execute executes the request
 func (f *Fetch) Execute() (*Response, error) {
 	if len(f.Errors) > 0 {
 		return nil, f.Errors[0]
+	}
+
+	if err := f.buildConfig(); err != nil {
+		return nil, err
 	}
 
 	methodOrigin := f.config.Method
@@ -179,17 +225,6 @@ func (f *Fetch) Execute() (*Response, error) {
 		}
 
 		urlQueryOrigin = u.Query()
-	}
-
-	// @BASEURL
-	if f.config.BaseURL != "" {
-		parsedBaseURL, err := url.Parse(f.config.BaseURL)
-		if err != nil {
-			return nil, errors.New("invalid base URL")
-		}
-
-		parsedBaseURL.Path = path.Join(parsedBaseURL.Path, fullURL)
-		fullURL = parsedBaseURL.String()
 	}
 
 	client := &http.Client{
@@ -376,6 +411,8 @@ func (f *Fetch) Execute() (*Response, error) {
 		return &Response{
 			Status:  resp.StatusCode,
 			Headers: resp.Header,
+			//
+			Request: f.config,
 		}, nil
 	}
 

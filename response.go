@@ -16,6 +16,8 @@ type Response struct {
 	Body        []byte
 	resultCache gjson.Result
 	parsed      bool
+	//
+	Request *Config
 }
 
 // String returns the body as string
