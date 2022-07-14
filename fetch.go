@@ -173,10 +173,11 @@ func (f *Fetch) buildConfig() error {
 	newURL := f.config.URL
 	if f.config.Params != nil {
 		for k, v := range f.config.Params {
+			vEscaped := url.QueryEscape(v)
 			// support /:id/:name
-			newURL = strings.Replace(newURL, ":"+k, v, -1)
+			newURL = strings.Replace(newURL, ":"+k, vEscaped, -1)
 			// support /{id}/{name}
-			newURL = strings.Replace(newURL, "{"+k+"}", v, -1)
+			newURL = strings.Replace(newURL, "{"+k+"}", vEscaped, -1)
 		}
 	}
 
