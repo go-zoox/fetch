@@ -67,3 +67,8 @@ func (r *Response) UnmarshalJSON(v interface{}) error {
 func (r *Response) UnmarshalYAML(v interface{}) error {
 	return yaml.Unmarshal(r.Body, v)
 }
+
+// Ok returns true if status code is 2xx
+func (r *Response) Ok() bool {
+	return r.Status >= 200 && r.Status < 300
+}
