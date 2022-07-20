@@ -346,8 +346,11 @@ func (f *Fetch) Execute() (*Response, error) {
 						continue
 					}
 
-					if file, ok := v.(*os.File); ok {
-						if fw, err = w.CreateFormFile(k, file.Name()); err != nil {
+					if file, ok := v.(io.Reader); ok {
+						// @TODO
+						// filename := file.Name()
+						filename := k
+						if fw, err = w.CreateFormFile(k, filename); err != nil {
 							return nil, err
 						}
 
@@ -395,7 +398,9 @@ func (f *Fetch) Execute() (*Response, error) {
 		// panic("error sending request: " + err.Error())
 		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
 	}
-	defer resp.Body.Close()
+	if !f.config.IsStream {
+		defer resp.Body.Close()
+	}
 
 	if f.config.DownloadFilePath != "" {
 		file, err := os.OpenFile(f.config.DownloadFilePath, os.O_CREATE|os.O_WRONLY, 0644)
@@ -417,6 +422,17 @@ func (f *Fetch) Execute() (*Response, error) {
 		}, nil
 	}
 
+	if f.config.IsStream {
+		return &Response{
+			Status:  resp.StatusCode,
+			Headers: resp.Header,
+			//
+			Request: f.config,
+			//
+			Stream: resp.Body,
+		}, nil
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// panic("error reading response: " + err.Error())
@@ -429,6 +445,8 @@ func (f *Fetch) Execute() (*Response, error) {
 		Status:  resp.StatusCode,
 		Headers: resp.Header,
 		Body:    body,
+		//
+		Request: f.config,
 	}, nil
 }
 
@@ -497,6 +515,24 @@ func (f *Fetch) Download(url string, filepath string, config ...*Config) *Fetch 
 		SetMethod(GET).
 		SetURL(url).
 		SetDownloadFilePath(filepath)
+}
+
+// Stream ...
+func (f *Fetch) Stream(url string, config ...*Config) *Fetch {
+	var cfg *Config = &Config{}
+	if len(config) > 0 {
+		cfg = config[0]
+	}
+
+	if cfg.Method == "" {
+		cfg.Method = GET
+	}
+
+	cfg.IsStream = true
+
+	return f.Clone().
+		SetConfig(cfg).
+		SetURL(url)
 }
 
 // func (f *Fetch) JSON() *Response {

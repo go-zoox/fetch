@@ -3,6 +3,8 @@ package fetch
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/goccy/go-yaml"
@@ -18,6 +20,8 @@ type Response struct {
 	parsed      bool
 	//
 	Request *Config
+	//
+	Stream io.ReadCloser
 }
 
 // String returns the body as string
@@ -71,4 +75,8 @@ func (r *Response) UnmarshalYAML(v interface{}) error {
 // Ok returns true if status code is 2xx
 func (r *Response) Ok() bool {
 	return r.Status >= 200 && r.Status < 300
+}
+
+func (r *Response) Error() error {
+	return fmt.Errorf("[%d] %s", r.Status, r.String())
 }

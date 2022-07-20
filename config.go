@@ -20,6 +20,8 @@ type Config struct {
 	DownloadFilePath string
 	//
 	Proxy string
+	//
+	IsStream bool
 }
 
 // Merge merges the config with the given config
@@ -79,6 +81,10 @@ func (cfg *Config) Merge(config *Config) {
 
 	if config.Proxy != "" {
 		cfg.Proxy = config.Proxy
+	}
+
+	if config.IsStream {
+		cfg.IsStream = config.IsStream
 	}
 }
 
