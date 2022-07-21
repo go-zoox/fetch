@@ -350,6 +350,14 @@ func (f *Fetch) Execute() (*Response, error) {
 						// @TODO
 						// filename := file.Name()
 						filename := k
+						type File interface {
+							Name() string
+						}
+
+						if f, ok := file.(File); ok {
+							filename = f.Name()
+						}
+
 						if fw, err = w.CreateFormFile(k, filename); err != nil {
 							return nil, err
 						}
