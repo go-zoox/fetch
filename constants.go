@@ -30,10 +30,10 @@ var METHODS = []string{
 	PATCH,
 }
 
-// headers
+// HeaderContentTye is the content type header name
 const HeaderContentTye = "Content-Type"
 
-// DEBUG env
+// EnvDEBUG is the DEBUG env name
 const EnvDEBUG = "GO_ZOOX_FETCH_DEBUG"
 
 // ErrTooManyArguments is the error when the number of arguments is too many

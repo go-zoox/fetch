@@ -25,66 +25,66 @@ type Config struct {
 }
 
 // Merge merges the config with the given config
-func (cfg *Config) Merge(config *Config) {
+func (c *Config) Merge(config *Config) {
 	if config == nil {
 		return
 	}
 
 	if config.URL != "" {
-		cfg.URL = config.URL
+		c.URL = config.URL
 	}
 
 	if config.Method != "" {
-		cfg.Method = config.Method
+		c.Method = config.Method
 	}
 
 	if config.Headers != nil {
 		for header := range config.Headers {
-			if _, ok := cfg.Headers[header]; !ok {
+			if _, ok := c.Headers[header]; !ok {
 				// fmt.Printf("%s origin(%s) => new(%s)", header, cfg.Headers[header], config.Headers[header])
-				cfg.Headers[header] = config.Headers[header]
+				c.Headers[header] = config.Headers[header]
 			}
 		}
 	}
 
 	if config.Query != nil {
 		for query := range config.Query {
-			if _, ok := cfg.Query[query]; !ok {
-				cfg.Query[query] = config.Query[query]
+			if _, ok := c.Query[query]; !ok {
+				c.Query[query] = config.Query[query]
 			}
 		}
 	}
 
 	if config.Params != nil {
 		for param := range config.Params {
-			if _, ok := cfg.Params[param]; !ok {
-				cfg.Params[param] = config.Params[param]
+			if _, ok := c.Params[param]; !ok {
+				c.Params[param] = config.Params[param]
 			}
 		}
 	}
 
 	if config.Body != nil {
-		cfg.Body = config.Body
+		c.Body = config.Body
 	}
 
 	if config.BaseURL != "" {
-		cfg.BaseURL = config.BaseURL
+		c.BaseURL = config.BaseURL
 	}
 
 	if config.Timeout != 0 {
-		cfg.Timeout = config.Timeout
+		c.Timeout = config.Timeout
 	}
 
 	if config.DownloadFilePath != "" {
-		cfg.DownloadFilePath = config.DownloadFilePath
+		c.DownloadFilePath = config.DownloadFilePath
 	}
 
 	if config.Proxy != "" {
-		cfg.Proxy = config.Proxy
+		c.Proxy = config.Proxy
 	}
 
 	if config.IsStream {
-		cfg.IsStream = config.IsStream
+		c.IsStream = config.IsStream
 	}
 }
 
