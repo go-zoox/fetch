@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -14,6 +13,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/go-zoox/core-utils/fmt"
 
 	"golang.org/x/net/proxy"
 )
@@ -27,6 +28,10 @@ func (f *Fetch) Execute() (*Response, error) {
 	config, err := f.Config()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get config: %v", err)
+	}
+
+	if os.Getenv(EnvDEBUG) != "" {
+		fmt.PrintJSON("[DEBUG][Fetch][Config] ", config)
 	}
 
 	fullURL := config.URL

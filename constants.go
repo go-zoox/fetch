@@ -33,6 +33,9 @@ var METHODS = []string{
 // headers
 const HeaderContentTye = "Content-Type"
 
+// DEBUG env
+const EnvDEBUG = "GO_ZOOX_FETCH_DEBUG"
+
 // ErrTooManyArguments is the error when the number of arguments is too many
 var ErrTooManyArguments = errors.New("too many arguments")
 

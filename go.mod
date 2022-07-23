@@ -3,6 +3,7 @@ module github.com/go-zoox/fetch
 go 1.18
 
 require (
+	github.com/go-zoox/core-utils v1.0.13
 	github.com/goccy/go-yaml v1.9.5
 	github.com/tidwall/gjson v1.14.0
 	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
