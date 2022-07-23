@@ -30,6 +30,12 @@ func New(cfg ...*Config) *Fetch {
 	return &Fetch{config: config}
 }
 
+// Create creates a new fetch with base url
+// Specially useful for Client SDK
+func Create(baseURL string) *Fetch {
+	return New().SetBaseURL(baseURL)
+}
+
 // SetConfig sets the config of fetch
 func (f *Fetch) SetConfig(configs ...*Config) *Fetch {
 	for _, config := range configs {
