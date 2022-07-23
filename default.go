@@ -10,7 +10,7 @@ func DefaultConfig() *Config {
 		Timeout: Timeout,
 	}
 
-	config.Headers["user-agent"] = DefaultUserAgent()
+	config.Headers[HeaderUseAgent] = DefaultUserAgent()
 
 	return config
 }

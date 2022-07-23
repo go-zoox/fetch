@@ -33,6 +33,27 @@ var METHODS = []string{
 // HeaderContentTye is the content type header name
 const HeaderContentTye = "Content-Type"
 
+// HeaderAccept is the accept header name
+const HeaderAccept = "Accept"
+
+// HeaderReferrer is the referrer header name
+const HeaderReferrer = "Referer"
+
+// HeaderUseAgent ...
+const HeaderUseAgent = "User-Agent"
+
+// HeaderAuthorization ...
+const HeaderAuthorization = "Authorization"
+
+// HeaderCacheControl ...
+const HeaderCacheControl = "Cache-Control"
+
+// HeaderAcceptEncoding ...
+const HeaderAcceptEncoding = "Accept-Encoding"
+
+// HeaderAcceptLanguage ...
+const HeaderAcceptLanguage = "Accept-Language"
+
 // EnvDEBUG is the DEBUG env name
 const EnvDEBUG = "GO_ZOOX_FETCH_DEBUG"
 

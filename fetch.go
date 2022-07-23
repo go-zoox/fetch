@@ -108,26 +108,22 @@ func (f *Fetch) SetTimeout(timeout time.Duration) *Fetch {
 
 // SetUserAgent sets the user agent
 func (f *Fetch) SetUserAgent(userAgent string) *Fetch {
-	f.SetHeader("user-agent", userAgent)
-	return f
+	return f.SetHeader(HeaderUseAgent, userAgent)
 }
 
 // SetBasicAuth sets the basic auth username and password
 func (f *Fetch) SetBasicAuth(username, password string) *Fetch {
-	f.SetAuthorization("Basic " + base64.RawStdEncoding.EncodeToString([]byte(username+":"+password)))
-	return f
+	return f.SetAuthorization("Basic " + base64.RawStdEncoding.EncodeToString([]byte(username+":"+password)))
 }
 
 // SetBearToken sets the bear token
 func (f *Fetch) SetBearToken(token string) *Fetch {
-	f.SetAuthorization("Bearer " + token)
-	return f
+	return f.SetAuthorization("Bearer " + token)
 }
 
 // SetAuthorization sets the authorization token
 func (f *Fetch) SetAuthorization(token string) *Fetch {
-	f.SetHeader("Authorization", token)
-	return f
+	return f.SetHeader(HeaderAuthorization, token)
 }
 
 // SetProxy sets the proxy
@@ -149,9 +145,34 @@ func (f *Fetch) SetProxy(proxy string) *Fetch {
 	return f
 }
 
+// SetAccept sets the accept header
+func (f *Fetch) SetAccept(accept string) *Fetch {
+	return f.SetHeader(HeaderAccept, accept)
+}
+
 // SetContentType ...
 func (f *Fetch) SetContentType(contentType string) *Fetch {
 	return f.SetHeader(HeaderContentTye, contentType)
+}
+
+// SetReferrer sets the referrer
+func (f *Fetch) SetReferrer(referrer string) *Fetch {
+	return f.SetHeader(HeaderReferrer, referrer)
+}
+
+// SetCacheControl sets the cache control
+func (f *Fetch) SetCacheControl(cacheControl string) *Fetch {
+	return f.SetHeader(HeaderCacheControl, cacheControl)
+}
+
+// SetAcceptEncoding sets the accept encoding
+func (f *Fetch) SetAcceptEncoding(acceptEncoding string) *Fetch {
+	return f.SetHeader(HeaderAcceptEncoding, acceptEncoding)
+}
+
+// SetAcceptLanguage sets the accept language
+func (f *Fetch) SetAcceptLanguage(acceptLanguage string) *Fetch {
+	return f.SetHeader(HeaderAcceptLanguage, acceptLanguage)
 }
 
 // Config returns the config of fetch
