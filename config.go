@@ -9,10 +9,10 @@ import (
 type Config struct {
 	URL     string
 	Method  string
-	Headers ConfigHeaders
-	Query   ConfigQuery
-	Params  ConfigParams
-	Body    ConfigBody
+	Headers Headers
+	Query   Query
+	Params  Params
+	Body    Body
 	//
 	BaseURL string
 	Timeout time.Duration
@@ -97,35 +97,50 @@ func (c *Config) Clone() *Config {
 	return c
 }
 
-// ConfigBody is the body of the request
-type ConfigBody interface{}
+// Body is the body of the request
+type Body interface{}
 
-// ConfigHeaders is the headers of the request
-type ConfigHeaders map[string]string
+// Headers is the headers of the request
+type Headers map[string]string
 
 // Get returns the value of the given key
-func (h ConfigHeaders) Get(key string) string {
+func (h Headers) Get(key string) string {
 	for k, v := range h {
 		if strings.EqualFold(k, key) {
-			return strings.ToLower(v)
+			return v
 		}
 	}
 
 	return ""
 }
 
-// ConfigQuery is the query of the request
-type ConfigQuery map[string]string
-
-// Get returns the value of the given key
-func (h ConfigQuery) Get(key string) string {
-	return h[key]
+// Set sets the value of the given key
+func (h Headers) Set(key, value string) {
+	h[strings.ToLower(key)] = value
 }
 
-// ConfigParams is the params of the request
-type ConfigParams map[string]string
+// Query is the query of the request
+type Query map[string]string
 
 // Get returns the value of the given key
-func (h ConfigParams) Get(key string) string {
-	return h[key]
+func (q Query) Get(key string) string {
+	return q[key]
+}
+
+// Set sets the value of the given key
+func (q Query) Set(key, value string) {
+	q[key] = value
+}
+
+// Params is the params of the request
+type Params map[string]string
+
+// Get returns the value of the given key
+func (p Params) Get(key string) string {
+	return p[key]
+}
+
+// Set sets the value of the given key
+func (p Params) Set(key, value string) {
+	p[key] = value
 }

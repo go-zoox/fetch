@@ -89,7 +89,7 @@ func (f *Fetch) SetParam(key, value string) *Fetch {
 }
 
 // SetBody sets the body
-func (f *Fetch) SetBody(body ConfigBody) *Fetch {
+func (f *Fetch) SetBody(body Body) *Fetch {
 	f.config.Body = body
 	return f
 }

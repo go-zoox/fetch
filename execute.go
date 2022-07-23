@@ -95,7 +95,10 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	for k, v := range config.Headers {
-		req.Header.Set(k, v)
+		// ignore empty value
+		if v != "" {
+			req.Header.Set(k, v)
+		}
 	}
 
 	query := req.URL.Query()
@@ -105,7 +108,10 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 	// apply custom query
 	for k, v := range config.Query {
-		query.Add(k, v)
+		// ignore empty value
+		if v != "" {
+			query.Add(k, v)
+		}
 	}
 	req.URL.RawQuery = query.Encode()
 
