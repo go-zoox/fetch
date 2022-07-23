@@ -225,8 +225,16 @@ func (f *Fetch) Execute() (*Response, error) {
 		// panic("error sending request: " + err.Error())
 		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
 	}
+
 	if !config.IsStream {
 		defer resp.Body.Close()
+	}
+
+	if config.IsSession {
+		cookies := resp.Cookies()
+		for _, cookie := range cookies {
+			f.SetCookie(cookie.Name, cookie.Value)
+		}
 	}
 
 	if config.DownloadFilePath != "" {

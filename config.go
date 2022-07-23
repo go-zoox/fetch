@@ -22,6 +22,8 @@ type Config struct {
 	Proxy string
 	//
 	IsStream bool
+	//
+	IsSession bool
 }
 
 // Merge merges the config with the given config
