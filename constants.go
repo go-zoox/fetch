@@ -54,6 +54,9 @@ const HeaderAcceptEncoding = "Accept-Encoding"
 // HeaderAcceptLanguage ...
 const HeaderAcceptLanguage = "Accept-Language"
 
+// HeaderCookie ...
+const HeaderCookie = "Cookie"
+
 // EnvDEBUG is the DEBUG env name
 const EnvDEBUG = "GO_ZOOX_FETCH_DEBUG"
 
@@ -95,3 +98,6 @@ var ErrCannotCopyFile = errors.New("cannot copy file")
 
 // ErrInvalidURLFormEncodedBody is the error when the body is invalid for url form encoded
 var ErrInvalidURLFormEncodedBody = errors.New("invalid url form encoded body")
+
+// ErrCookieEmptyKey is the error when the key is empty
+var ErrCookieEmptyKey = errors.New("empty key")

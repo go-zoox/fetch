@@ -126,6 +126,16 @@ func (f *Fetch) SetAuthorization(token string) *Fetch {
 	return f.SetHeader(HeaderAuthorization, token)
 }
 
+// SetCookie sets the cookie
+func (f *Fetch) SetCookie(key, value string) *Fetch {
+	origin := f.config.Headers.Get(HeaderCookie)
+
+	cookie := newCookie(origin)
+	cookie.Set(key, value)
+
+	return f.SetHeader(HeaderCookie, cookie.String())
+}
+
 // SetProxy sets the proxy
 //	support http, https, socks5
 //  example:
