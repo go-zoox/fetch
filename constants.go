@@ -3,22 +3,22 @@ package fetch
 import "errors"
 
 // HEAD is request method HEAD
-var HEAD = "HEAD"
+const HEAD = "HEAD"
 
 // GET is request method GET
-var GET = "GET"
+const GET = "GET"
 
 // POST is request method POST
-var POST = "POST"
+const POST = "POST"
 
 // PUT is request method PUT
-var PUT = "PUT"
+const PUT = "PUT"
 
 // DELETE is request method DELETE
-var DELETE = "DELETE"
+const DELETE = "DELETE"
 
 // PATCH is request method PATCH
-var PATCH = "PATCH"
+const PATCH = "PATCH"
 
 // METHODS is the list of supported methods
 var METHODS = []string{
@@ -29,6 +29,9 @@ var METHODS = []string{
 	DELETE,
 	PATCH,
 }
+
+// headers
+const HeaderContentTye = "Content-Type"
 
 // ErrTooManyArguments is the error when the number of arguments is too many
 var ErrTooManyArguments = errors.New("too many arguments")

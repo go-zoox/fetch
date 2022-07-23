@@ -106,3 +106,32 @@ func TestProxy(t *testing.T) {
 
 	fmt.Println("response:", response.String())
 }
+
+func TestRetryManual(t *testing.T) {
+	f := New()
+
+	response, err := f.Get("https://httpbin.zcorky.com/headers").
+		SetBearToken("zzz").
+		Send()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// j, _ := json.MarshalIndent(f.config, " ", "	")
+	// fmt.Println(string(j))
+
+	if response.Get("headers.authorization").String() != "Bearer zzz" {
+		t.Fatal("Expected Authorization Bearer zzz, got", response.Get("headers.authorization").String())
+	}
+
+	response, err = f.Retry(func(f *Fetch) {
+		f.SetBearToken("another")
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if response.Get("headers.authorization").String() != "Bearer another" {
+		t.Fatal("Expected Authorization Bearer zzz, got", response.Get("headers.authorization").String())
+	}
+}

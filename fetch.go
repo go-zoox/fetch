@@ -1,31 +1,19 @@
 package fetch
 
 import (
-	"bytes"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"mime/multipart"
-	"net"
-	"net/http"
 	"net/url"
-	"os"
 	"path"
 	"strings"
 	"time"
-
-	"golang.org/x/net/proxy"
 )
 
 // Fetch is the Fetch Client
 type Fetch struct {
 	config *Config
 	Errors []error
-	//
-	isConfigBuilt bool
 }
 
 // New creates a fetch client
@@ -49,15 +37,6 @@ func (f *Fetch) SetConfig(configs ...*Config) *Fetch {
 	}
 
 	return f
-}
-
-// @TODO
-func (f *Fetch) getMethodConfig(config ...*Config) *Config {
-	if len(config) > 0 {
-		return config[0]
-	}
-
-	return &Config{}
 }
 
 // SetURL sets the url of fetch
@@ -164,11 +143,19 @@ func (f *Fetch) SetProxy(proxy string) *Fetch {
 	return f
 }
 
-func (f *Fetch) buildConfig() error {
-	if f.isConfigBuilt {
-		return nil
-	}
-	f.isConfigBuilt = true
+// SetContentType ...
+func (f *Fetch) SetContentType(contentType string) *Fetch {
+	return f.SetHeader(HeaderContentTye, contentType)
+}
+
+// Config returns the config of fetch
+func (f *Fetch) Config() (*Config, error) {
+	cfg := f.config.Clone()
+
+	// if f.isConfigBuilt {
+	// 	return f.config, nil
+	// }
+	// f.isConfigBuilt = true
 
 	newURL := f.config.URL
 	if f.config.Params != nil {
@@ -185,277 +172,16 @@ func (f *Fetch) buildConfig() error {
 	if f.config.BaseURL != "" {
 		parsedBaseURL, err := url.Parse(f.config.BaseURL)
 		if err != nil {
-			return errors.New("invalid base URL")
+			return cfg, errors.New("invalid base URL")
 		}
 
 		parsedBaseURL.Path = path.Join(parsedBaseURL.Path, newURL)
 		newURL = parsedBaseURL.String()
 	}
 
-	f.config.URL = newURL
-	return nil
-}
+	cfg.URL = newURL
 
-// Config returns the request config
-func (f *Fetch) Config() (*Config, error) {
-	if err := f.buildConfig(); err != nil {
-		return nil, err
-	}
-
-	return f.config, nil
-}
-
-// Execute executes the request
-func (f *Fetch) Execute() (*Response, error) {
-	if len(f.Errors) > 0 {
-		return nil, f.Errors[0]
-	}
-
-	if err := f.buildConfig(); err != nil {
-		return nil, err
-	}
-
-	methodOrigin := f.config.Method
-	fullURL := f.config.URL
-	// @ORIGIN QUERY
-	var urlQueryOrigin url.Values
-	if strings.ContainsAny(fullURL, "?") {
-		u, err := url.Parse(f.config.BaseURL)
-		if err != nil {
-			return nil, errors.New("failed to parsed origin url")
-		}
-
-		urlQueryOrigin = u.Query()
-	}
-
-	client := &http.Client{
-		Timeout: f.config.Timeout,
-	}
-
-	// apply proxy
-	if f.config.Proxy != "" {
-		// fmt.Println("proxy:", f.config.Proxy)
-		proxyURL, err := url.Parse(f.config.Proxy)
-		if err != nil {
-			return nil, fmt.Errorf("invalid proxy: %s", f.config.Proxy)
-		}
-
-		switch proxyURL.Scheme {
-		case "http", "https":
-			client.Transport = &http.Transport{
-				Proxy: http.ProxyURL(proxyURL),
-				Dial: (&net.Dialer{
-					Timeout:   30 * time.Second,
-					KeepAlive: 30 * time.Second,
-				}).Dial,
-				TLSHandshakeTimeout: 10 * time.Second,
-			}
-		case "socks5", "socks5h":
-			dialer, err := proxy.FromURL(proxyURL, proxy.Direct)
-			if err != nil {
-				return nil, fmt.Errorf("invalid socks5 proxy: %s", f.config.Proxy)
-			}
-
-			client.Transport = &http.Transport{
-				Proxy:               http.ProxyFromEnvironment,
-				Dial:                dialer.Dial,
-				TLSHandshakeTimeout: 10 * time.Second,
-			}
-		}
-	}
-
-	req, err := http.NewRequest(methodOrigin, fullURL, nil)
-	if err != nil {
-		// panic("error creating request: " + err.Error())
-		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
-	}
-
-	// @TODO
-	if _, ok := f.config.Body.(string); ok {
-		req.Header.Set("Content-Type", "text/plain")
-	}
-
-	for k, v := range f.config.Headers {
-		req.Header.Set(k, v)
-	}
-
-	query := req.URL.Query()
-	// apply origin query
-	for k, v := range urlQueryOrigin {
-		query.Add(k, v[0])
-	}
-	// apply custom query
-	for k, v := range f.config.Query {
-		query.Add(k, v)
-	}
-	req.URL.RawQuery = query.Encode()
-
-	// if GET, ignore Body
-	if f.config.Body != nil && f.config.Method == GET {
-		// // panic("Cannot set body for GET request")
-		// return nil, ErrCannotSendBodyWithGet
-		f.config.Body = nil
-	}
-
-	if f.config.Body != nil {
-		if req.Header.Get("Content-Type") == "" {
-			req.Header.Set("Content-Type", "application/json")
-		}
-
-		if strings.Contains(req.Header.Get("Content-Type"), "application/json") {
-			body, err := json.Marshal(f.config.Body)
-			if err != nil {
-				// panic("error marshalling body: " + err.Error())
-				return nil, errors.New(ErrInvalidJSONBody.Error() + ": " + err.Error())
-			}
-
-			// req.Header.Set("Content-Type", "application/json")
-			req.Body = ioutil.NopCloser(bytes.NewReader(body))
-		} else if strings.Contains(req.Header.Get("Content-Type"), "application/x-www-form-urlencoded") {
-			body := url.Values{}
-			if kv, ok := f.config.Body.(map[string]string); ok {
-				for k, v := range kv {
-					body.Add(k, v)
-				}
-			} else {
-				return nil, errors.New(ErrInvalidURLFormEncodedBody.Error() + ": must be map[string]string")
-			}
-
-			// req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-			// req.Body = ioutil.NopCloser(bytes.NewReader(body))
-			req.Body = ioutil.NopCloser(strings.NewReader(body.Encode()))
-		} else if strings.Contains(req.Header.Get("Content-Type"), "multipart/form-data") {
-			if values, ok := f.config.Body.(map[string]interface{}); ok {
-				var b bytes.Buffer
-				w := multipart.NewWriter(&b)
-				for k, v := range values {
-					if v == nil {
-						continue
-					}
-
-					var fw io.Writer
-					if text, ok := v.(string); ok {
-						if fw, err = w.CreateFormField(k); err != nil {
-							return nil, err
-						}
-
-						if _, err = io.Copy(fw, strings.NewReader(text)); err != nil {
-							return nil, err
-						}
-
-						continue
-					}
-
-					if file, ok := v.(io.Reader); ok {
-						// @TODO
-						// filename := file.Name()
-						filename := k
-						type File interface {
-							Name() string
-						}
-
-						if f, ok := file.(File); ok {
-							filename = f.Name()
-						}
-
-						if fw, err = w.CreateFormFile(k, filename); err != nil {
-							return nil, err
-						}
-
-						if _, err = io.Copy(fw, file); err != nil {
-							return nil, err
-						}
-						continue
-					}
-				}
-				w.Close()
-				req.Header.Set("Content-Type", w.FormDataContentType())
-				req.Body = ioutil.NopCloser(&b)
-			} else if values, ok := f.config.Body.(map[string]string); ok {
-				var b bytes.Buffer
-				w := multipart.NewWriter(&b)
-				for k, v := range values {
-					var fw io.Writer
-					if fw, err = w.CreateFormField(k); err != nil {
-						return nil, err
-					}
-
-					if _, err = io.Copy(fw, strings.NewReader(v)); err != nil {
-						return nil, err
-					}
-
-					continue
-				}
-				w.Close()
-				req.Header.Set("Content-Type", w.FormDataContentType())
-				req.Body = ioutil.NopCloser(&b)
-			} else {
-				return nil, errors.New(ErrInvalidBodyMultipart.Error() + ": must be map[string]interface{} or map[string]string")
-			}
-		} else {
-			if _, ok := f.config.Body.(string); !ok {
-				return nil, ErrorInvalidBody
-			}
-
-			req.Body = ioutil.NopCloser(bytes.NewReader([]byte(f.config.Body.(string))))
-		}
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		// panic("error sending request: " + err.Error())
-		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
-	}
-	if !f.config.IsStream {
-		defer resp.Body.Close()
-	}
-
-	if f.config.DownloadFilePath != "" {
-		file, err := os.OpenFile(f.config.DownloadFilePath, os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return nil, err
-		}
-		defer file.Close()
-
-		_, err = io.Copy(file, resp.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		return &Response{
-			Status:  resp.StatusCode,
-			Headers: resp.Header,
-			//
-			Request: f.config,
-		}, nil
-	}
-
-	if f.config.IsStream {
-		return &Response{
-			Status:  resp.StatusCode,
-			Headers: resp.Header,
-			//
-			Request: f.config,
-			//
-			Stream: resp.Body,
-		}, nil
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		// panic("error reading response: " + err.Error())
-		return nil, errors.New(ErrReadingResponse.Error() + ": " + err.Error())
-	}
-
-	// fmt.Println("response: ", string(body))
-
-	return &Response{
-		Status:  resp.StatusCode,
-		Headers: resp.Header,
-		Body:    body,
-		//
-		Request: f.config,
-	}, nil
+	return cfg, nil
 }
 
 // Send sends the request
@@ -468,82 +194,13 @@ func (f *Fetch) Clone() *Fetch {
 	return New(f.config)
 }
 
-// Head is http.head
-func (f *Fetch) Head(url string, config ...*Config) *Fetch {
-	return f.Clone().
-		SetConfig(config...).
-		SetMethod(HEAD).
-		SetURL(url)
-}
+// Retry retries the request
+func (f *Fetch) Retry(before func(f *Fetch)) (*Response, error) {
+	nf := f.Clone()
 
-// Get is http.get
-func (f *Fetch) Get(url string, config ...*Config) *Fetch {
-	return f.Clone().
-		SetConfig(config...).
-		SetMethod(GET).
-		SetURL(url)
-}
-
-// Post is http.post
-func (f *Fetch) Post(url string, config ...*Config) *Fetch {
-	return f.Clone().
-		SetConfig(config...).
-		SetMethod(POST).
-		SetURL(url)
-}
-
-// Put is http.put
-func (f *Fetch) Put(url string, config ...*Config) *Fetch {
-	return f.Clone().
-		SetConfig(config...).
-		SetMethod(PUT).
-		SetURL(url)
-}
-
-// Patch is http.patch
-func (f *Fetch) Patch(url string, config ...*Config) *Fetch {
-	return f.Clone().
-		SetConfig(config...).
-		SetMethod(PATCH).
-		SetURL(url)
-}
-
-// Delete is http.delete
-func (f *Fetch) Delete(url string, config ...*Config) *Fetch {
-	return f.Clone().
-		SetConfig(config...).
-		SetMethod(DELETE).
-		SetURL(url)
-}
-
-// Download downloads file by url
-func (f *Fetch) Download(url string, filepath string, config ...*Config) *Fetch {
-	return f.Clone().
-		SetConfig(config...).
-		SetMethod(GET).
-		SetURL(url).
-		SetDownloadFilePath(filepath)
-}
-
-// Stream ...
-func (f *Fetch) Stream(url string, config ...*Config) *Fetch {
-	var cfg *Config = &Config{}
-	if len(config) > 0 {
-		cfg = config[0]
+	if before != nil {
+		before(nf)
 	}
 
-	if cfg.Method == "" {
-		cfg.Method = GET
-	}
-
-	cfg.IsStream = true
-
-	return f.Clone().
-		SetConfig(cfg).
-		SetURL(url)
+	return nf.Send()
 }
-
-// func (f *Fetch) JSON() *Response {
-// 	f.SetHeader("accept", "application/json")
-// 	return f.Execute()
-// }

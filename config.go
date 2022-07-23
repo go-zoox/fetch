@@ -88,6 +88,13 @@ func (cfg *Config) Merge(config *Config) {
 	}
 }
 
+// Clone returns a clone of the config
+func (c *Config) Clone() *Config {
+	nc := DefaultConfig()
+	nc.Merge(c)
+	return c
+}
+
 // ConfigBody is the body of the request
 type ConfigBody interface{}
 
@@ -97,7 +104,7 @@ type ConfigHeaders map[string]string
 // Get returns the value of the given key
 func (h ConfigHeaders) Get(key string) string {
 	for k, v := range h {
-		if strings.ToLower(k) == strings.ToLower(key) {
+		if strings.EqualFold(k, key) {
 			return strings.ToLower(v)
 		}
 	}
