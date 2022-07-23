@@ -207,13 +207,20 @@ func (f *Fetch) Config() (*Config, error) {
 
 	// @BASEURL
 	if f.config.BaseURL != "" {
-		parsedBaseURL, err := url.Parse(f.config.BaseURL)
+		uNewURL, err := url.Parse(newURL)
 		if err != nil {
-			return cfg, errors.New("invalid base URL")
+			return cfg, errors.New("invalid NewURL")
 		}
 
-		parsedBaseURL.Path = path.Join(parsedBaseURL.Path, newURL)
-		newURL = parsedBaseURL.String()
+		if uNewURL.Host == "" {
+			parsedBaseURL, err := url.Parse(f.config.BaseURL)
+			if err != nil {
+				return cfg, errors.New("invalid base URL")
+			}
+
+			parsedBaseURL.Path = path.Join(parsedBaseURL.Path, newURL)
+			newURL = parsedBaseURL.String()
+		}
 	}
 
 	cfg.URL = newURL
