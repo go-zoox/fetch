@@ -31,7 +31,7 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	if os.Getenv(EnvDEBUG) != "" {
-		fmt.PrintJSON("[DEBUG][Fetch][Config] ", config)
+		fmt.PrintJSON("[GOZOOX_FETCH][DEBUG][Request]", config)
 	}
 
 	fullURL := config.URL
