@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/goccy/go-yaml"
@@ -95,6 +96,77 @@ func (r *Response) Ok() bool {
 	return r.Status >= 200 && r.Status < 300
 }
 
+// Error returns error with status and response string.
 func (r *Response) Error() error {
 	return fmt.Errorf("[%d] %s", r.Status, r.String())
+}
+
+// StatusCode returns status code of the response
+func (r *Response) StatusCode() int {
+	return r.Status
+}
+
+// StatusText returns status text of the response
+func (r *Response) StatusText() string {
+	return http.StatusText(r.Status)
+}
+
+// ContentType returns content type of the response
+func (r *Response) ContentType() string {
+	return r.Headers.Get(HeaderContentTye)
+}
+
+// Location returns location of the response
+func (r *Response) Location() string {
+	return r.Headers.Get(HeaderLocation)
+}
+
+// ContentLength returns content length of the response
+func (r *Response) ContentLength() int {
+	vs := r.Headers.Get(HeaderContentLength)
+	if vs == "" {
+		return 0
+	}
+
+	value, err := strconv.Atoi(vs)
+	if err != nil {
+		return 0
+	}
+
+	return value
+}
+
+// ContentEncoding returns content encoding of the response
+func (r *Response) ContentEncoding() string {
+	return r.Headers.Get(HeaderContentEncoding)
+}
+
+// TransferEncoding returns transfer encoding of the response
+func (r *Response) TransferEncoding() string {
+	return r.Headers.Get(HeaderTransferEncoding)
+}
+
+// ContentLanguage returns content language of the response
+func (r *Response) ContentLanguage() string {
+	return r.Headers.Get(HeaderContentLanguage)
+}
+
+// XPoweredBy returns x-powered-by of the response
+func (r *Response) XPoweredBy() string {
+	return r.Headers.Get(HeaderXPoweredBy)
+}
+
+// XRequestID returns x-request-id of the response
+func (r *Response) XRequestID() string {
+	return r.Headers.Get(HeaderXRequestID)
+}
+
+// XAcceptRanges returns x-accept-ranges of the response
+func (r *Response) XAcceptRanges() string {
+	return r.Headers.Get(HeaderXAcceptRanges)
+}
+
+// SetCookie returns set-cookie of the response
+func (r *Response) SetCookie() string {
+	return r.Headers.Get(HeaderSetCookie)
 }

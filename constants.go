@@ -57,6 +57,33 @@ const HeaderAcceptLanguage = "Accept-Language"
 // HeaderCookie ...
 const HeaderCookie = "Cookie"
 
+// HeaderLocation ...
+const HeaderLocation = "Location"
+
+// HeaderContentLength ...
+const HeaderContentLength = "Content-Length"
+
+// HeaderContentEncoding ...
+const HeaderContentEncoding = "Content-Encoding"
+
+// HeaderTransferEncoding ...
+const HeaderTransferEncoding = "Transfer-Encoding"
+
+// HeaderContentLanguage ...
+const HeaderContentLanguage = "Content-Language"
+
+// HeaderSetCookie ...
+const HeaderSetCookie = "Set-Cookie"
+
+// HeaderXPoweredBy ...
+const HeaderXPoweredBy = "X-Powered-By"
+
+// HeaderXRequestID ...
+const HeaderXRequestID = "X-Request-ID"
+
+// HeaderXAcceptRanges ...
+const HeaderXAcceptRanges = "X-Accept-Ranges"
+
 // EnvDEBUG is the DEBUG env name
 const EnvDEBUG = "GO_ZOOX_FETCH_DEBUG"
 
