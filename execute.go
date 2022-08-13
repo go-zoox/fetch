@@ -229,6 +229,11 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	resp, err := client.Do(req)
 
+	if err != nil {
+		// panic("error sending request: " + err.Error())
+		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
+	}
+
 	// Check that the server actually sent compressed data
 	var reader io.ReadCloser
 	switch resp.Header.Get(HeaderContentEncoding) {
@@ -240,11 +245,6 @@ func (f *Fetch) Execute() (*Response, error) {
 		// defer reader.Close()
 	default:
 		reader = resp.Body
-	}
-
-	if err != nil {
-		// panic("error sending request: " + err.Error())
-		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
 	}
 
 	if !config.IsStream {
