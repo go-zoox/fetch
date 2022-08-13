@@ -8,7 +8,9 @@
 [![Release](https://img.shields.io/github/tag/go-zoox/fetch.svg?label=Release)](https://github.com/go-zoox/fetch/releases)
 
 ## Installation
+
 To install the package, run:
+
 ```bash
 go get github.com/go-zoox/fetch
 ```
@@ -24,8 +26,15 @@ fmt.Println(url, method)
 ```
 
 ## Depencencies
-* [gjson](github.com/tidwall/gjson) - Get JSON Whenever You Need, you don't define type first。
-* [mozillazg/request](https://github.com/mozillazg/request) - A developer-friendly HTTP request library for Gopher
+
+- [gjson](github.com/tidwall/gjson) - Get JSON Whenever You Need, you don't
+  define type first。
+
+## Inspired By
+
+- [mozillazg/request](https://github.com/mozillazg/request) - A
+  developer-friendly HTTP request library for Gopher
 
 ## License
+
 GoZoox is released under the [MIT License](./LICENSE).
