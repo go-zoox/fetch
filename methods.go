@@ -51,6 +51,7 @@ func (f *Fetch) Delete(url string, config ...*Config) *Fetch {
 // Download downloads file by url
 func (f *Fetch) Download(url string, filepath string, config ...*Config) *Fetch {
 	return f.
+		SetHeader(HeaderAcceptEncoding, "gzip").
 		SetConfig(config...).
 		SetMethod(GET).
 		SetURL(url).
