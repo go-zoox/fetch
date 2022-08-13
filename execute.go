@@ -2,6 +2,7 @@ package fetch
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"io"
@@ -227,13 +228,27 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	resp, err := client.Do(req)
+
+	// Check that the server actually sent compressed data
+	var reader io.ReadCloser
+	switch resp.Header.Get(HeaderContentEncoding) {
+	case "gzip":
+		reader, err = gzip.NewReader(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("gzip decode error: %s", err)
+		}
+		// defer reader.Close()
+	default:
+		reader = resp.Body
+	}
+
 	if err != nil {
 		// panic("error sending request: " + err.Error())
 		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
 	}
 
 	if !config.IsStream {
-		defer resp.Body.Close()
+		defer reader.Close()
 	}
 
 	if config.IsSession {
@@ -250,7 +265,7 @@ func (f *Fetch) Execute() (*Response, error) {
 		}
 		defer file.Close()
 
-		_, err = io.Copy(file, resp.Body)
+		_, err = io.Copy(file, reader)
 		if err != nil {
 			return nil, err
 		}
@@ -270,11 +285,11 @@ func (f *Fetch) Execute() (*Response, error) {
 			//
 			Request: config,
 			//
-			Stream: resp.Body,
+			Stream: reader,
 		}, nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(reader)
 	if err != nil {
 		// panic("error reading response: " + err.Error())
 		return nil, errors.New(ErrReadingResponse.Error() + ": " + err.Error())
