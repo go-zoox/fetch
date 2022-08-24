@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/go-zoox/testify"
 )
 
 func TestBaseURL(t *testing.T) {
@@ -134,4 +136,121 @@ func TestRetryManual(t *testing.T) {
 	if response.Get("headers.authorization").String() != "Bearer another" {
 		t.Fatal("Expected Authorization Bearer zzz, got", response.Get("headers.authorization").String())
 	}
+}
+
+func TestCreate(t *testing.T) {
+	baseURL := "https://httpbin.zcorky.com"
+	f := Create(baseURL)
+	testify.Equal(t, baseURL, f.config.BaseURL)
+}
+
+func TestSetQuery(t *testing.T) {
+	f := New()
+	f.SetQuery("a", "b")
+	f.SetQuery("c", "d")
+
+	testify.Equal(t, "b", f.config.Query.Get("a"))
+	testify.Equal(t, "d", f.config.Query.Get("c"))
+}
+
+func TestSetHeader(t *testing.T) {
+	f := New()
+	f.SetHeader("a", "b")
+	f.SetHeader("c", "d")
+
+	testify.Equal(t, "b", f.config.Headers.Get("a"))
+	testify.Equal(t, "d", f.config.Headers.Get("c"))
+}
+
+func TestSetParams(t *testing.T) {
+	f := New()
+	f.SetParam("a", "b")
+	f.SetParam("c", "d")
+
+	testify.Equal(t, "b", f.config.Params.Get("a"))
+	testify.Equal(t, "d", f.config.Params.Get("c"))
+}
+
+func TestSetBody(t *testing.T) {
+	f := New()
+	f.SetBody("a")
+	testify.Equal(t, "a", f.config.Body.(string))
+
+	// body := map[string]string{
+	// 	"a": "b",
+	// }
+	// f.SetBody(body)
+	// testify.Equal(t, body, f.config.Body.(map[string]string))
+}
+
+func TestSetBaseURL(t *testing.T) {
+	f := New()
+	f.SetBaseURL("https://httpbin.zcorky.com")
+	testify.Equal(t, "https://httpbin.zcorky.com", f.config.BaseURL)
+}
+
+func TestSetTimeout(t *testing.T) {
+	f := New()
+	f.SetTimeout(1 * time.Second)
+	testify.Equal(t, 1*time.Second, f.config.Timeout)
+}
+
+func TestSetUserAgent(t *testing.T) {
+	f := New()
+	f.SetUserAgent("test")
+	testify.Equal(t, "test", f.config.Headers.Get(HeaderUserAgent))
+}
+
+func TestConfigSetBasicAuth(t *testing.T) {
+	f := New()
+	f.SetBasicAuth("user", "passwd")
+	testify.Equal(t, "Basic dXNlcjpwYXNzd2Q", f.config.Headers.Get(HeaderAuthorization))
+}
+
+func TestConfigSetBearToken(t *testing.T) {
+	f := New()
+	f.SetBearToken("token")
+	testify.Equal(t, "Bearer token", f.config.Headers.Get(HeaderAuthorization))
+}
+
+func TestSetAuthorization(t *testing.T) {
+	f := New()
+	f.SetAuthorization("token")
+	testify.Equal(t, "token", f.config.Headers.Get(HeaderAuthorization))
+}
+
+func TestSetAccept(t *testing.T) {
+	f := New()
+	f.SetAccept("application/json")
+	testify.Equal(t, "application/json", f.config.Headers.Get(HeaderAccept))
+}
+
+func TestSetContentType(t *testing.T) {
+	f := New()
+	f.SetContentType("application/json")
+	testify.Equal(t, "application/json", f.config.Headers.Get(HeaderContentType))
+}
+
+func TestSetReferrer(t *testing.T) {
+	f := New()
+	f.SetReferrer("https://httpbin.zcorky.com")
+	testify.Equal(t, "https://httpbin.zcorky.com", f.config.Headers.Get(HeaderReferrer))
+}
+
+func TestSetCacheControl(t *testing.T) {
+	f := New()
+	f.SetCacheControl("no-cache")
+	testify.Equal(t, "no-cache", f.config.Headers.Get(HeaderCacheControl))
+}
+
+func TestSetAcceptEncoding(t *testing.T) {
+	f := New()
+	f.SetAcceptEncoding("gzip")
+	testify.Equal(t, "gzip", f.config.Headers.Get(HeaderAcceptEncoding))
+}
+
+func TestSetAcceptLanguage(t *testing.T) {
+	f := New()
+	f.SetAcceptLanguage("zh-CN")
+	testify.Equal(t, "zh-CN", f.config.Headers.Get(HeaderAcceptLanguage))
 }

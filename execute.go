@@ -92,7 +92,7 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	// @TODO
 	if _, ok := config.Body.(string); ok {
-		req.Header.Set(HeaderContentTye, "text/plain")
+		req.Header.Set(HeaderContentType, "text/plain")
 	}
 
 	for k, v := range config.Headers {
@@ -124,11 +124,11 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	if config.Body != nil {
-		if req.Header.Get(HeaderContentTye) == "" {
-			req.Header.Set(HeaderContentTye, "application/json")
+		if req.Header.Get(HeaderContentType) == "" {
+			req.Header.Set(HeaderContentType, "application/json")
 		}
 
-		if strings.Contains(req.Header.Get(HeaderContentTye), "application/json") {
+		if strings.Contains(req.Header.Get(HeaderContentType), "application/json") {
 			body, err := json.Marshal(config.Body)
 			if err != nil {
 				// panic("error marshalling body: " + err.Error())
@@ -137,7 +137,7 @@ func (f *Fetch) Execute() (*Response, error) {
 
 			// req.Header.Set(HeaderContentTye, "application/json")
 			req.Body = ioutil.NopCloser(bytes.NewReader(body))
-		} else if strings.Contains(req.Header.Get(HeaderContentTye), "application/x-www-form-urlencoded") {
+		} else if strings.Contains(req.Header.Get(HeaderContentType), "application/x-www-form-urlencoded") {
 			body := url.Values{}
 			if kv, ok := config.Body.(map[string]string); ok {
 				for k, v := range kv {
@@ -150,7 +150,7 @@ func (f *Fetch) Execute() (*Response, error) {
 			// req.Header.Set(HeaderContentTye, "application/x-www-form-urlencoded")
 			// req.Body = ioutil.NopCloser(bytes.NewReader(body))
 			req.Body = ioutil.NopCloser(strings.NewReader(body.Encode()))
-		} else if strings.Contains(req.Header.Get(HeaderContentTye), "multipart/form-data") {
+		} else if strings.Contains(req.Header.Get(HeaderContentType), "multipart/form-data") {
 			if values, ok := config.Body.(map[string]interface{}); ok {
 				var b bytes.Buffer
 				w := multipart.NewWriter(&b)
@@ -195,7 +195,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					}
 				}
 				w.Close()
-				req.Header.Set(HeaderContentTye, w.FormDataContentType())
+				req.Header.Set(HeaderContentType, w.FormDataContentType())
 				req.Body = ioutil.NopCloser(&b)
 			} else if values, ok := config.Body.(map[string]string); ok {
 				var b bytes.Buffer
@@ -213,7 +213,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					continue
 				}
 				w.Close()
-				req.Header.Set(HeaderContentTye, w.FormDataContentType())
+				req.Header.Set(HeaderContentType, w.FormDataContentType())
 				req.Body = ioutil.NopCloser(&b)
 			} else {
 				return nil, errors.New(ErrInvalidBodyMultipart.Error() + ": must be map[string]interface{} or map[string]string")

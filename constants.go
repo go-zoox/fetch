@@ -30,8 +30,8 @@ var METHODS = []string{
 	PATCH,
 }
 
-// HeaderContentTye is the content type header name
-const HeaderContentTye = "Content-Type"
+// HeaderContentType is the content type header name
+const HeaderContentType = "Content-Type"
 
 // HeaderAccept is the accept header name
 const HeaderAccept = "Accept"
@@ -39,8 +39,8 @@ const HeaderAccept = "Accept"
 // HeaderReferrer is the referrer header name
 const HeaderReferrer = "Referer"
 
-// HeaderUseAgent ...
-const HeaderUseAgent = "User-Agent"
+// HeaderUserAgent ...
+const HeaderUserAgent = "User-Agent"
 
 // HeaderAuthorization ...
 const HeaderAuthorization = "Authorization"

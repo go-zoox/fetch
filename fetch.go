@@ -108,7 +108,7 @@ func (f *Fetch) SetTimeout(timeout time.Duration) *Fetch {
 
 // SetUserAgent sets the user agent
 func (f *Fetch) SetUserAgent(userAgent string) *Fetch {
-	return f.SetHeader(HeaderUseAgent, userAgent)
+	return f.SetHeader(HeaderUserAgent, userAgent)
 }
 
 // SetBasicAuth sets the basic auth username and password
@@ -162,7 +162,7 @@ func (f *Fetch) SetAccept(accept string) *Fetch {
 
 // SetContentType ...
 func (f *Fetch) SetContentType(contentType string) *Fetch {
-	return f.SetHeader(HeaderContentTye, contentType)
+	return f.SetHeader(HeaderContentType, contentType)
 }
 
 // SetReferrer sets the referrer

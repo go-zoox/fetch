@@ -32,7 +32,7 @@ func (r *Response) String() string {
 	s := string(r.Body)
 
 	if os.Getenv(EnvDEBUG) != "" {
-		if strings.Contains(r.Headers.Get(HeaderContentTye), "application/json") {
+		if strings.Contains(r.Headers.Get(HeaderContentType), "application/json") {
 			b, err := json.MarshalIndent(gjson.Parse(s).Value(), "", "  ")
 			if err != nil {
 				fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", s)
@@ -113,7 +113,7 @@ func (r *Response) StatusText() string {
 
 // ContentType returns content type of the response
 func (r *Response) ContentType() string {
-	return r.Headers.Get(HeaderContentTye)
+	return r.Headers.Get(HeaderContentType)
 }
 
 // Location returns location of the response
