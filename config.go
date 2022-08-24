@@ -41,6 +41,10 @@ func (c *Config) Merge(config *Config) {
 	}
 
 	if config.Headers != nil {
+		if c.Headers == nil {
+			c.Headers = make(Headers)
+		}
+
 		for header := range config.Headers {
 			if _, ok := c.Headers[header]; !ok {
 				// fmt.Printf("%s origin(%s) => new(%s)", header, cfg.Headers[header], config.Headers[header])
@@ -50,6 +54,10 @@ func (c *Config) Merge(config *Config) {
 	}
 
 	if config.Query != nil {
+		if c.Query == nil {
+			c.Query = make(Query)
+		}
+
 		for query := range config.Query {
 			if _, ok := c.Query[query]; !ok {
 				c.Query[query] = config.Query[query]
@@ -58,6 +66,10 @@ func (c *Config) Merge(config *Config) {
 	}
 
 	if config.Params != nil {
+		if c.Params == nil {
+			c.Params = make(Params)
+		}
+
 		for param := range config.Params {
 			if _, ok := c.Params[param]; !ok {
 				c.Params[param] = config.Params[param]

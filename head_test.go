@@ -2,6 +2,8 @@ package fetch
 
 import (
 	"testing"
+
+	"github.com/go-zoox/testify"
 )
 
 func TestHead(t *testing.T) {
@@ -21,4 +23,15 @@ func TestHead(t *testing.T) {
 	if response.Headers.Get("server") == "" {
 		t.Error("Expected server not empty, got empty")
 	}
+}
+
+func TestHeadParamsError(t *testing.T) {
+	_, err := Head("")
+	testify.Assert(t, err != nil, "Expected error, got nil")
+
+	_, err = Head("https://httpbin.zcorky.com/image", &Config{}, &Config{})
+	testify.Assert(t, err != nil, "Expected error, got nil")
+
+	_, err = Head("https://httpbin.zcorky.com/image", &Config{})
+	testify.Assert(t, err == nil, "Expected nil, got error")
 }

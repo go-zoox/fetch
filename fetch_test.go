@@ -9,6 +9,22 @@ import (
 	"github.com/go-zoox/testify"
 )
 
+func TestNew(t *testing.T) {
+	f := New()
+	// testify.NotNil(t, f)
+	testify.Assert(t, f != nil, "Expected not nil, got nil")
+}
+
+func TestSetMethod(t *testing.T) {
+	f := New()
+	f.SetMethod("GET")
+	testify.Equal(t, "GET", f.config.Method)
+
+	// invalid method
+	f.SetMethod("INVALID")
+	testify.Assert(t, &f.Errors[0] != nil)
+}
+
 func TestBaseURL(t *testing.T) {
 	BaseURL := "https://httpbin.zcorky.com"
 
@@ -253,4 +269,21 @@ func TestSetAcceptLanguage(t *testing.T) {
 	f := New()
 	f.SetAcceptLanguage("zh-CN")
 	testify.Equal(t, "zh-CN", f.config.Headers.Get(HeaderAcceptLanguage))
+}
+
+func TestSetProxy(t *testing.T) {
+	f := New()
+	f.SetProxy("https://example.com")
+	testify.Equal(t, "https://example.com", f.config.Proxy)
+}
+
+func TestFetchConfig(t *testing.T) {
+	f := New()
+	f.SetBaseURL("https://httpbin.zcorky.com")
+	f.SetURL("/get/:id/:name")
+	f.SetParam("id", "1")
+	f.SetParam("name", "Zero")
+	cfg, err := f.Config()
+	testify.Assert(t, err == nil, "err should be nil")
+	testify.Equal(t, "https://httpbin.zcorky.com/get/1/Zero", cfg.URL)
 }

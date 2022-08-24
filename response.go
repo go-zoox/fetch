@@ -161,9 +161,9 @@ func (r *Response) XRequestID() string {
 	return r.Headers.Get(HeaderXRequestID)
 }
 
-// XAcceptRanges returns x-accept-ranges of the response
-func (r *Response) XAcceptRanges() string {
-	return r.Headers.Get(HeaderXAcceptRanges)
+// AcceptRanges returns x-accept-ranges of the response
+func (r *Response) AcceptRanges() string {
+	return r.Headers.Get(HeaderAcceptRanges)
 }
 
 // SetCookie returns set-cookie of the response

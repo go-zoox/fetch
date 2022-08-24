@@ -81,8 +81,8 @@ const HeaderXPoweredBy = "X-Powered-By"
 // HeaderXRequestID ...
 const HeaderXRequestID = "X-Request-ID"
 
-// HeaderXAcceptRanges ...
-const HeaderXAcceptRanges = "X-Accept-Ranges"
+// HeaderAcceptRanges ...
+const HeaderAcceptRanges = "Accept-Ranges"
 
 // EnvDEBUG is the DEBUG env name
 const EnvDEBUG = "GO_ZOOX_FETCH_DEBUG"
