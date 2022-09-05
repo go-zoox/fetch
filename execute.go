@@ -284,17 +284,31 @@ func (f *Fetch) Execute() (*Response, error) {
 		}
 		defer file.Close()
 
-		_, err = io.Copy(file, reader)
-		if err != nil {
-			return nil, err
-		}
-
-		return &Response{
+		res := &Response{
 			Status:  resp.StatusCode,
 			Headers: resp.Header,
 			//
 			Request: config,
-		}, nil
+		}
+
+		if f.config.OnProgress != nil {
+			progress := &Progress{
+				Total:   resp.ContentLength,
+				Current: 0,
+			}
+
+			_, err = io.Copy(io.MultiWriter(file, progress), reader)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			_, err = io.Copy(file, reader)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return res, nil
 	}
 
 	if config.IsStream {
