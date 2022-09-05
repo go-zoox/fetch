@@ -15,8 +15,6 @@ import (
 type Fetch struct {
 	config *Config
 	Errors []error
-	//
-	context context.Context
 }
 
 // New creates a fetch client
@@ -30,9 +28,12 @@ func New(cfg ...*Config) *Fetch {
 		config.Merge(cfg[0])
 	}
 
+	if config.Context == nil {
+		config.Context = context.Background()
+	}
+
 	return &Fetch{
-		config:  config,
-		context: context.TODO(),
+		config: config,
 	}
 }
 
@@ -44,7 +45,7 @@ func Create(baseURL string) *Fetch {
 
 // SetContext sets the context
 func (f *Fetch) SetContext(ctx context.Context) *Fetch {
-	f.context = ctx
+	f.config.Context = ctx
 	return f
 }
 

@@ -84,7 +84,7 @@ func (f *Fetch) Execute() (*Response, error) {
 		}
 	}
 
-	req, err := http.NewRequestWithContext(f.context, methodOrigin, fullURL, nil)
+	req, err := http.NewRequestWithContext(f.config.Context, methodOrigin, fullURL, nil)
 	if err != nil {
 		// panic("error creating request: " + err.Error())
 		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
