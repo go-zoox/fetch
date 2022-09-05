@@ -1,4 +1,4 @@
 package fetch
 
 // Version is the version of this package
-var Version = "1.5.4"
+var Version = "1.5.5"
