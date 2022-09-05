@@ -16,8 +16,8 @@
 - [ ] GZip support
   - [x] Decode GZip response
   - [ ] Encode GZip request (Upload File with GZip)
-- [ ] HTTP/2 support
-- [ ] Simple Auth Methods
+- [x] HTTP/2 support
+- [x] Simple Auth Methods
   - [x] Basic Auth
   - [x] Bearer Auth
 - [x] Support cancel (using context)
