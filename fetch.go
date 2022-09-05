@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -14,6 +15,8 @@ import (
 type Fetch struct {
 	config *Config
 	Errors []error
+	//
+	context context.Context
 }
 
 // New creates a fetch client
@@ -27,13 +30,22 @@ func New(cfg ...*Config) *Fetch {
 		config.Merge(cfg[0])
 	}
 
-	return &Fetch{config: config}
+	return &Fetch{
+		config:  config,
+		context: context.TODO(),
+	}
 }
 
 // Create creates a new fetch with base url
 // Specially useful for Client SDK
 func Create(baseURL string) *Fetch {
 	return New().SetBaseURL(baseURL)
+}
+
+// SetContext sets the context
+func (f *Fetch) SetContext(ctx context.Context) *Fetch {
+	f.context = ctx
+	return f
 }
 
 // SetConfig sets the config of fetch

@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"testing"
@@ -286,4 +287,16 @@ func TestFetchConfig(t *testing.T) {
 	cfg, err := f.Config()
 	testify.Assert(t, err == nil, "err should be nil")
 	testify.Equal(t, "https://httpbin.zcorky.com/get/1/Zero", cfg.URL)
+}
+
+func TestFetchCancel(t *testing.T) {
+	f := New()
+	f.SetBaseURL("https://httpbin.zcorky.com")
+	f.SetURL("/delay/3")
+	ctx, cancel := context.WithCancel(context.Background())
+	f.SetContext(ctx)
+	cancel()
+	_, err := f.Execute()
+	// fmt.Println(err)
+	testify.Assert(t, err != nil, "err should not be nil")
 }
