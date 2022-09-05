@@ -20,7 +20,7 @@
 - [ ] Simple Auth Methods
   - [x] Basic Auth
   - [x] Bearer Auth
-- [ ] Support cancel
+- [x] Support cancel (using context)
 
 ### Timeouts and retries
 - [x] Support timeout
@@ -308,6 +308,34 @@ func main() {
 	}
 
 	fmt.Println(response.JSON())
+}
+```
+
+### Upload
+
+```go
+package main
+
+import (
+  "github.com/go-zoox/fetch"
+)
+
+func main() {
+	file, _ := os.Open("go.mod")
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	f := fetch.New()
+	f.SetBaseURL("https://httpbin.zcorky.com")
+	f.SetURL("/delay/3")
+	f.SetContext(ctx)
+
+	go func() {
+		_, err := f.Execute()
+		fmt.Println(err)
+	}()
+
+	cancel()
 }
 ```
 

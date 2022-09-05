@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"context"
 	"strings"
 	"time"
 )
@@ -24,6 +25,8 @@ type Config struct {
 	IsStream bool
 	//
 	IsSession bool
+	//
+	Context context.Context
 }
 
 // Merge merges the config with the given config

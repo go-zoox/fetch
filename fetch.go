@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -27,13 +28,25 @@ func New(cfg ...*Config) *Fetch {
 		config.Merge(cfg[0])
 	}
 
-	return &Fetch{config: config}
+	if config.Context == nil {
+		config.Context = context.Background()
+	}
+
+	return &Fetch{
+		config: config,
+	}
 }
 
 // Create creates a new fetch with base url
 // Specially useful for Client SDK
 func Create(baseURL string) *Fetch {
 	return New().SetBaseURL(baseURL)
+}
+
+// SetContext sets the context
+func (f *Fetch) SetContext(ctx context.Context) *Fetch {
+	f.config.Context = ctx
+	return f
 }
 
 // SetConfig sets the config of fetch
