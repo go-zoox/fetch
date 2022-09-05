@@ -27,7 +27,7 @@
 - [x] Support retry on failure
 
 ### Progress
-- [ ] Support progress and progress events
+- [x] Support progress and progress events
 
 ### File upload and download
 - [x] Download files easily
