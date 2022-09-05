@@ -1,5 +1,9 @@
 package fetch
 
+// inspired by:
+//	https://github.com/schollz/progressbar/blob/master/progressbar.go
+//  https://stackoverflow.com/questions/26050380/go-tracking-post-request-progress
+
 type Progress struct {
 	Reporter func(percent int64, current, total int64)
 	Total    int64
