@@ -31,7 +31,7 @@
 
 ### File upload and download
 - [x] Download files easily
-- [ ] Upload files easily
+- [x] Upload files easily
 
 ### Cache, Proxy and UNIX sockets
 - [ ] [RFC compliant caching](https://github.com/sindresorhus/got/blob/main/documentation/cache.md)
@@ -270,6 +270,44 @@ func main() {
 	}
 
   fmt.Println(response.JSON())
+}
+```
+
+### Download
+
+```go
+package main
+
+import (
+  "github.com/go-zoox/fetch"
+)
+
+func main() {
+	response, err := fetch.Download("https://httpbin.zcorky.com/image", "/tmp/image.webp")
+  if err != nil {
+		panic(err)
+	}
+}
+```
+
+### Upload
+
+```go
+package main
+
+import (
+  "github.com/go-zoox/fetch"
+)
+
+func main() {
+		file, _ := os.Open("go.mod")
+
+	response, err := Upload("https://httpbin.zcorky.com/upload", file)
+  if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(response.JSON())
 }
 ```
 

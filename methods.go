@@ -1,5 +1,7 @@
 package fetch
 
+import "io"
+
 // Head is http.head
 func (f *Fetch) Head(url string, config ...*Config) *Fetch {
 	return f.
@@ -56,6 +58,18 @@ func (f *Fetch) Download(url string, filepath string, config ...*Config) *Fetch 
 		SetMethod(GET).
 		SetURL(url).
 		SetDownloadFilePath(filepath)
+}
+
+// Upload upload a file
+func (f *Fetch) Upload(url string, file io.Reader, config ...*Config) *Fetch {
+	return f.
+		SetConfig(config...).
+		SetMethod(POST).
+		SetURL(url).
+		SetHeader(HeaderContentType, "multipart/form-data").
+		SetBody(map[string]interface{}{
+			"file": file,
+		})
 }
 
 // Stream ...
