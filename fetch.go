@@ -70,6 +70,12 @@ func (f *Fetch) SetDownloadFilePath(filepath string) *Fetch {
 	return f
 }
 
+// SetProgressCallback sets the progress callback
+func (f *Fetch) SetProgressCallback(callback func(percent int64, current, total int64)) *Fetch {
+	f.config.OnProgress = callback
+	return f
+}
+
 // SetMethod sets the method
 func (f *Fetch) SetMethod(method string) *Fetch {
 	for m := range METHODS {

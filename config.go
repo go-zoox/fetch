@@ -29,6 +29,8 @@ type Config struct {
 	HTTP2 bool
 	//
 	Context context.Context
+	//
+	OnProgress func(percent int64, current, total int64)
 }
 
 // Merge merges the config with the given config
