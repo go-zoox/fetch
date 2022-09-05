@@ -48,8 +48,17 @@ func (f *Fetch) Execute() (*Response, error) {
 		urlQueryOrigin = u.Query()
 	}
 
+	transport := http.DefaultTransport
+
+	// if f.config.HTTP2 {
+	// 	if err := http2.ConfigureTransport(&transport); err != nil {
+	// 		return nil, fmt.Errorf("failed to configure http2: %v", err)
+	// 	}
+	// }
+
 	client := &http.Client{
-		Timeout: config.Timeout,
+		Timeout:   config.Timeout,
+		Transport: transport,
 	}
 
 	// apply proxy
@@ -68,7 +77,12 @@ func (f *Fetch) Execute() (*Response, error) {
 					Timeout:   30 * time.Second,
 					KeepAlive: 30 * time.Second,
 				}).Dial,
-				TLSHandshakeTimeout: 10 * time.Second,
+				// default transport
+				ForceAttemptHTTP2:     true,
+				MaxIdleConns:          100,
+				IdleConnTimeout:       90 * time.Second,
+				TLSHandshakeTimeout:   10 * time.Second,
+				ExpectContinueTimeout: 1 * time.Second,
 			}
 		case "socks5", "socks5h":
 			dialer, err := proxy.FromURL(proxyURL, proxy.Direct)
@@ -77,9 +91,14 @@ func (f *Fetch) Execute() (*Response, error) {
 			}
 
 			client.Transport = &http.Transport{
-				Proxy:               http.ProxyFromEnvironment,
-				Dial:                dialer.Dial,
-				TLSHandshakeTimeout: 10 * time.Second,
+				Proxy: http.ProxyFromEnvironment,
+				Dial:  dialer.Dial,
+				// default transport
+				ForceAttemptHTTP2:     true,
+				MaxIdleConns:          100,
+				IdleConnTimeout:       90 * time.Second,
+				TLSHandshakeTimeout:   10 * time.Second,
+				ExpectContinueTimeout: 1 * time.Second,
 			}
 		}
 	}

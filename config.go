@@ -26,6 +26,8 @@ type Config struct {
 	//
 	IsSession bool
 	//
+	HTTP2 bool
+	//
 	Context context.Context
 }
 
