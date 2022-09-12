@@ -47,9 +47,6 @@
 - [ ] Plugin system
 - [ ] Middleware system
 
-## Methods
-
-
 ## Installation
 
 To install the package, run:
@@ -311,7 +308,7 @@ func main() {
 }
 ```
 
-### Upload
+### Cancel
 
 ```go
 package main
@@ -351,6 +348,7 @@ func main() {
 - [mozillazg/request](https://github.com/mozillazg/request) - A
   developer-friendly HTTP request library for Gopher
 - [monaco-io/request](https://github.com/monaco-io/request) - go request, go http client
+
 ## License
 
 GoZoox is released under the [MIT License](./LICENSE).
