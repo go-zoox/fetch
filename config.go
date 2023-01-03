@@ -30,6 +30,8 @@ type Config struct {
 	//
 	TLSCertificate     []byte
 	TLSCertificateFile string
+	// UnixDomainSocket socket like /var/run/docker.sock
+	UnixDomainSocket string
 	//
 	Context context.Context
 	//
@@ -113,6 +115,10 @@ func (c *Config) Merge(config *Config) {
 
 	if config.TLSCertificateFile != "" {
 		c.TLSCertificateFile = config.TLSCertificateFile
+	}
+
+	if config.UnixDomainSocket != "" {
+		c.UnixDomainSocket = config.UnixDomainSocket
 	}
 
 	if config.IsStream {

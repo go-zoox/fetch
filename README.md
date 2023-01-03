@@ -39,7 +39,9 @@
 - [x] Proxy support
   - [x] Environment variables (HTTP_PROXY/HTTPS_PROXY/SOCKS_PROXY)
   - [x] Custom proxy
-- [ ] UNIX Domain Sockets
+- [x] UNIX Domain Sockets
+	- [Example: HTTP](https://github.com/go-zoox/examples/tree/master/unix-domain-socket/http)
+	- [Example: HTTPs](https://github.com/go-zoox/examples/tree/master/unix-domain-socket/https)
 
 ### WebDAV
 - [ ] WebDAV protocol support

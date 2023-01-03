@@ -62,28 +62,33 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	transport := http.DefaultTransport
 	if config.TLSCertificate != nil {
-		defaultTransportDialContext := func(dialer *net.Dialer) func(context.Context, string, string) (net.Conn, error) {
-			return dialer.DialContext
-		}
-
 		pool := x509.NewCertPool()
 		pool.AppendCertsFromPEM(config.TLSCertificate)
 
-		transport = &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-			DialContext: defaultTransportDialContext(&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}),
-			ForceAttemptHTTP2:     true,
-			MaxIdleConns:          100,
-			IdleConnTimeout:       90 * time.Second,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ExpectContinueTimeout: 1 * time.Second,
-			// https://stackoverflow.com/questions/38822764/how-to-send-a-https-request-with-a-certificate-golang
-			TLSClientConfig: &tls.Config{
-				RootCAs: pool,
-			},
+		// defaultTransportDialContext := func(dialer *net.Dialer) func(context.Context, string, string) (net.Conn, error) {
+		// 	return dialer.DialContext
+		// }
+
+		// transport = &http.Transport{
+		// 	Proxy: http.ProxyFromEnvironment,
+		// 	DialContext: defaultTransportDialContext(&net.Dialer{
+		// 		Timeout:   30 * time.Second,
+		// 		KeepAlive: 30 * time.Second,
+		// 	}),
+		// 	ForceAttemptHTTP2:     true,
+		// 	MaxIdleConns:          100,
+		// 	IdleConnTimeout:       90 * time.Second,
+		// 	TLSHandshakeTimeout:   10 * time.Second,
+		// 	ExpectContinueTimeout: 1 * time.Second,
+		// 	// https://stackoverflow.com/questions/38822764/how-to-send-a-https-request-with-a-certificate-golang
+		// 	TLSClientConfig: &tls.Config{
+		// 		RootCAs: pool,
+		// 	},
+		// }
+
+		tr := transport.(*http.Transport)
+		tr.TLSClientConfig = &tls.Config{
+			RootCAs: pool,
 		}
 	}
 
@@ -280,6 +285,20 @@ func (f *Fetch) Execute() (*Response, error) {
 			}
 
 			req.Body = ioutil.NopCloser(bytes.NewReader([]byte(config.Body.(string))))
+		}
+	}
+
+	// unix domain socket: https://gist.github.com/teknoraver/5ffacb8757330715bcbcc90e6d46ac74
+	if config.UnixDomainSocket != "" {
+		// remove unix://
+		// if strings.HasPrefix(config.UnixDomainSocket, "unix://") {
+		// 	config.UnixDomainSocket = config.UnixDomainSocket[7:]
+		// }
+		config.UnixDomainSocket = strings.TrimPrefix(config.UnixDomainSocket, "unix://")
+
+		tr := client.Transport.(*http.Transport)
+		tr.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+			return net.Dial("unix", config.UnixDomainSocket)
 		}
 	}
 
