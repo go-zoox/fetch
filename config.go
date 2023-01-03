@@ -28,6 +28,9 @@ type Config struct {
 	//
 	HTTP2 bool
 	//
+	TLSCertificate     []byte
+	TLSCertificateFile string
+	//
 	Context context.Context
 	//
 	OnProgress func(percent int64, current, total int64)
@@ -102,6 +105,14 @@ func (c *Config) Merge(config *Config) {
 
 	if config.Proxy != "" {
 		c.Proxy = config.Proxy
+	}
+
+	if config.TLSCertificate != nil {
+		c.TLSCertificate = config.TLSCertificate
+	}
+
+	if config.TLSCertificateFile != "" {
+		c.TLSCertificateFile = config.TLSCertificateFile
 	}
 
 	if config.IsStream {

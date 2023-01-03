@@ -3,6 +3,9 @@ package fetch
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"io"
@@ -48,7 +51,41 @@ func (f *Fetch) Execute() (*Response, error) {
 		urlQueryOrigin = u.Query()
 	}
 
+	if config.TLSCertificateFile != "" {
+		caCrt, err := ioutil.ReadFile(config.TLSCertificateFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read tls certificate file(%s): %v", config.TLSCertificateFile, err)
+		}
+
+		config.TLSCertificate = caCrt
+	}
+
 	transport := http.DefaultTransport
+	if config.TLSCertificate != nil {
+		defaultTransportDialContext := func(dialer *net.Dialer) func(context.Context, string, string) (net.Conn, error) {
+			return dialer.DialContext
+		}
+
+		pool := x509.NewCertPool()
+		pool.AppendCertsFromPEM(config.TLSCertificate)
+
+		transport = &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+			DialContext: defaultTransportDialContext(&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+			}),
+			ForceAttemptHTTP2:     true,
+			MaxIdleConns:          100,
+			IdleConnTimeout:       90 * time.Second,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+			// https://stackoverflow.com/questions/38822764/how-to-send-a-https-request-with-a-certificate-golang
+			TLSClientConfig: &tls.Config{
+				RootCAs: pool,
+			},
+		}
+	}
 
 	// if f.config.HTTP2 {
 	// 	if err := http2.ConfigureTransport(&transport); err != nil {
