@@ -106,7 +106,7 @@ func (f *Fetch) Execute() (*Response, error) {
 	req, err := http.NewRequestWithContext(f.config.Context, methodOrigin, fullURL, nil)
 	if err != nil {
 		// panic("error creating request: " + err.Error())
-		return nil, errors.New(ErrCannotCreateRequest.Error() + ": " + err.Error())
+		return nil, errors.New("ErrCannotCreateRequest(1): " + ErrCannotCreateRequest.Error() + ", err: " + err.Error())
 	}
 
 	// @TODO
@@ -151,7 +151,7 @@ func (f *Fetch) Execute() (*Response, error) {
 			body, err := json.Marshal(config.Body)
 			if err != nil {
 				// panic("error marshalling body: " + err.Error())
-				return nil, errors.New(ErrInvalidJSONBody.Error() + ": " + err.Error())
+				return nil, errors.New("ErrInvalidJSONBody(2): " + ErrInvalidJSONBody.Error() + ", err: " + err.Error())
 			}
 
 			// req.Header.Set(HeaderContentTye, "application/json")
@@ -250,7 +250,7 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	if err != nil {
 		// panic("error sending request: " + err.Error())
-		return nil, errors.New(ErrSendingRequest.Error() + ": " + err.Error())
+		return nil, errors.New("ErrSendingRequest(3):  " + ErrSendingRequest.Error() + ", err: " + err.Error() + "(Please check your network, maybe use bad proxy or network offline)")
 	}
 
 	// Check that the server actually sent compressed data
@@ -325,7 +325,7 @@ func (f *Fetch) Execute() (*Response, error) {
 	body, err := ioutil.ReadAll(reader)
 	if err != nil {
 		// panic("error reading response: " + err.Error())
-		return nil, errors.New(ErrReadingResponse.Error() + ": " + err.Error())
+		return nil, errors.New("ErrReadingResponse(4): " + ErrReadingResponse.Error() + ", err: " + err.Error())
 	}
 
 	// fmt.Println("response: ", string(body))
