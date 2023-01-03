@@ -30,6 +30,10 @@ type Config struct {
 	//
 	TLSCertificate     []byte
 	TLSCertificateFile string
+	// TLSInsecureSkipVerify means ignore verify tls certificate
+	//	use carefully, becuase it may cause security problems,
+	//		which means maybe server certificate has been hacked
+	TLSInsecureSkipVerify bool
 	// UnixDomainSocket socket like /var/run/docker.sock
 	UnixDomainSocket string
 	//
@@ -115,6 +119,10 @@ func (c *Config) Merge(config *Config) {
 
 	if config.TLSCertificateFile != "" {
 		c.TLSCertificateFile = config.TLSCertificateFile
+	}
+
+	if config.TLSInsecureSkipVerify {
+		c.TLSInsecureSkipVerify = config.TLSInsecureSkipVerify
 	}
 
 	if config.UnixDomainSocket != "" {

@@ -87,9 +87,18 @@ func (f *Fetch) Execute() (*Response, error) {
 		// }
 
 		tr := transport.(*http.Transport)
-		tr.TLSClientConfig = &tls.Config{
-			RootCAs: pool,
+		if tr.TLSClientConfig == nil {
+			tr.TLSClientConfig = &tls.Config{}
 		}
+		tr.TLSClientConfig.RootCAs = pool
+	}
+
+	if config.TLSInsecureSkipVerify {
+		tr := transport.(*http.Transport)
+		if tr.TLSClientConfig == nil {
+			tr.TLSClientConfig = &tls.Config{}
+		}
+		tr.TLSClientConfig.InsecureSkipVerify = config.TLSInsecureSkipVerify
 	}
 
 	// if f.config.HTTP2 {
