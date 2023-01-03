@@ -17,6 +17,7 @@
   - [x] Decode GZip response
   - [ ] Encode GZip request (Upload File with GZip)
 - [x] HTTP/2 support
+- [x] Custom TLS Certificate (Self signed certificate)
 - [x] Simple Auth Methods
   - [x] Basic Auth
   - [x] Bearer Auth
