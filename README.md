@@ -17,7 +17,9 @@
   - [x] Decode GZip response
   - [ ] Encode GZip request (Upload File with GZip)
 - [x] HTTP/2 support
-- [x] Custom TLS Certificate (Self signed certificate) [Example](https://github.com/go-zoox/examples/tree/master/https/fetch)
+- [x] TLS
+  - [x] Custom TLS Ca Certificate (Self signed certificate) [Example](https://github.com/go-zoox/examples/tree/master/https/fetch)
+	- [x] Custom Client Cert and Key for two-way authentication (Client Cert and Key)
 - [x] Simple Auth Methods
   - [x] Basic Auth
   - [x] Bearer Auth

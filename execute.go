@@ -51,19 +51,37 @@ func (f *Fetch) Execute() (*Response, error) {
 		urlQueryOrigin = u.Query()
 	}
 
-	if config.TLSCertificateFile != "" {
-		caCrt, err := ioutil.ReadFile(config.TLSCertificateFile)
+	if config.TLSCaCertFile != "" {
+		caCrt, err := ioutil.ReadFile(config.TLSCaCertFile)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read tls certificate file(%s): %v", config.TLSCertificateFile, err)
+			return nil, fmt.Errorf("failed to read tls certificate file(%s): %v", config.TLSCaCertFile, err)
 		}
 
-		config.TLSCertificate = caCrt
+		config.TLSCaCert = caCrt
+	}
+
+	if config.TLSCertFile != "" {
+		clientCrt, err := ioutil.ReadFile(config.TLSCertFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read tls certificate file(%s): %v", config.TLSCertFile, err)
+		}
+
+		config.TLSCert = clientCrt
+	}
+
+	if config.TLSKeyFile != "" {
+		clientKey, err := ioutil.ReadFile(config.TLSKeyFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read tls certificate file(%s): %v", config.TLSKeyFile, err)
+		}
+
+		config.TLSKey = clientKey
 	}
 
 	transport := http.DefaultTransport
-	if config.TLSCertificate != nil {
+	if config.TLSCaCert != nil {
 		pool := x509.NewCertPool()
-		pool.AppendCertsFromPEM(config.TLSCertificate)
+		pool.AppendCertsFromPEM(config.TLSCaCert)
 
 		// defaultTransportDialContext := func(dialer *net.Dialer) func(context.Context, string, string) (net.Conn, error) {
 		// 	return dialer.DialContext
@@ -91,6 +109,20 @@ func (f *Fetch) Execute() (*Response, error) {
 			tr.TLSClientConfig = &tls.Config{}
 		}
 		tr.TLSClientConfig.RootCAs = pool
+	}
+
+	if config.TLSCert != nil && config.TLSKey != nil {
+		tr := transport.(*http.Transport)
+		if tr.TLSClientConfig == nil {
+			tr.TLSClientConfig = &tls.Config{}
+		}
+
+		clientCrt, err := tls.X509KeyPair(config.TLSCert, config.TLSKey)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load client cert and key: %v", err)
+		}
+
+		tr.TLSClientConfig.Certificates = []tls.Certificate{clientCrt}
 	}
 
 	if config.TLSInsecureSkipVerify {

@@ -27,9 +27,17 @@ type Config struct {
 	IsSession bool
 	//
 	HTTP2 bool
-	//
-	TLSCertificate     []byte
-	TLSCertificateFile string
+
+	// TLS Ca Cert
+	TLSCaCert     []byte
+	TLSCaCertFile string
+	// TLS Cert
+	TLSCert     []byte
+	TLSCertFile string
+	// TLS Client Private Key
+	TLSKey     []byte
+	TLSKeyFile string
+
 	// TLSInsecureSkipVerify means ignore verify tls certificate
 	//	use carefully, becuase it may cause security problems,
 	//		which means maybe server certificate has been hacked
@@ -113,12 +121,28 @@ func (c *Config) Merge(config *Config) {
 		c.Proxy = config.Proxy
 	}
 
-	if config.TLSCertificate != nil {
-		c.TLSCertificate = config.TLSCertificate
+	if config.TLSCaCert != nil {
+		c.TLSCaCert = config.TLSCaCert
 	}
 
-	if config.TLSCertificateFile != "" {
-		c.TLSCertificateFile = config.TLSCertificateFile
+	if config.TLSCaCertFile != "" {
+		c.TLSCaCertFile = config.TLSCaCertFile
+	}
+
+	if config.TLSCert != nil {
+		c.TLSCert = config.TLSCert
+	}
+
+	if config.TLSCertFile != "" {
+		c.TLSCertFile = config.TLSCertFile
+	}
+
+	if config.TLSKey != nil {
+		c.TLSKey = config.TLSKey
+	}
+
+	if config.TLSKeyFile != "" {
+		c.TLSKeyFile = config.TLSKeyFile
 	}
 
 	if config.TLSInsecureSkipVerify {
