@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-zoox/headers"
 	"github.com/goccy/go-yaml"
 	"github.com/tidwall/gjson"
 )
@@ -32,7 +33,7 @@ func (r *Response) String() string {
 	s := string(r.Body)
 
 	if os.Getenv(EnvDEBUG) != "" {
-		if strings.Contains(r.Headers.Get(HeaderContentType), "application/json") {
+		if strings.Contains(r.Headers.Get(headers.ContentType), "application/json") {
 			b, err := json.MarshalIndent(gjson.Parse(s).Value(), "", "  ")
 			if err != nil {
 				fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", s)
@@ -113,17 +114,17 @@ func (r *Response) StatusText() string {
 
 // ContentType returns content type of the response
 func (r *Response) ContentType() string {
-	return r.Headers.Get(HeaderContentType)
+	return r.Headers.Get(headers.ContentType)
 }
 
 // Location returns location of the response
 func (r *Response) Location() string {
-	return r.Headers.Get(HeaderLocation)
+	return r.Headers.Get(headers.Location)
 }
 
 // ContentLength returns content length of the response
 func (r *Response) ContentLength() int {
-	vs := r.Headers.Get(HeaderContentLength)
+	vs := r.Headers.Get(headers.ContentLength)
 	if vs == "" {
 		return 0
 	}
@@ -138,35 +139,35 @@ func (r *Response) ContentLength() int {
 
 // ContentEncoding returns content encoding of the response
 func (r *Response) ContentEncoding() string {
-	return r.Headers.Get(HeaderContentEncoding)
+	return r.Headers.Get(headers.ContentEncoding)
 }
 
 // TransferEncoding returns transfer encoding of the response
 func (r *Response) TransferEncoding() string {
-	return r.Headers.Get(HeaderTransferEncoding)
+	return r.Headers.Get(headers.TransferEncoding)
 }
 
 // ContentLanguage returns content language of the response
 func (r *Response) ContentLanguage() string {
-	return r.Headers.Get(HeaderContentLanguage)
+	return r.Headers.Get(headers.ContentLanguage)
 }
 
 // XPoweredBy returns x-powered-by of the response
 func (r *Response) XPoweredBy() string {
-	return r.Headers.Get(HeaderXPoweredBy)
+	return r.Headers.Get(headers.XPoweredBy)
 }
 
 // XRequestID returns x-request-id of the response
 func (r *Response) XRequestID() string {
-	return r.Headers.Get(HeaderXRequestID)
+	return r.Headers.Get(headers.XRequestID)
 }
 
 // AcceptRanges returns x-accept-ranges of the response
 func (r *Response) AcceptRanges() string {
-	return r.Headers.Get(HeaderAcceptRanges)
+	return r.Headers.Get(headers.AcceptRanges)
 }
 
 // SetCookie returns set-cookie of the response
 func (r *Response) SetCookie() string {
-	return r.Headers.Get(HeaderSetCookie)
+	return r.Headers.Get(headers.SetCookie)
 }

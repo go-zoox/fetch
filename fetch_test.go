@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-zoox/headers"
 	"github.com/go-zoox/testify"
 )
 
@@ -215,61 +216,61 @@ func TestSetTimeout(t *testing.T) {
 func TestSetUserAgent(t *testing.T) {
 	f := New()
 	f.SetUserAgent("test")
-	testify.Equal(t, "test", f.config.Headers.Get(HeaderUserAgent))
+	testify.Equal(t, "test", f.config.Headers.Get(headers.UserAgent))
 }
 
 func TestConfigSetBasicAuth(t *testing.T) {
 	f := New()
 	f.SetBasicAuth("user", "passwd")
-	testify.Equal(t, "Basic dXNlcjpwYXNzd2Q", f.config.Headers.Get(HeaderAuthorization))
+	testify.Equal(t, "Basic dXNlcjpwYXNzd2Q", f.config.Headers.Get(headers.Authorization))
 }
 
 func TestConfigSetBearToken(t *testing.T) {
 	f := New()
 	f.SetBearToken("token")
-	testify.Equal(t, "Bearer token", f.config.Headers.Get(HeaderAuthorization))
+	testify.Equal(t, "Bearer token", f.config.Headers.Get(headers.Authorization))
 }
 
 func TestSetAuthorization(t *testing.T) {
 	f := New()
 	f.SetAuthorization("token")
-	testify.Equal(t, "token", f.config.Headers.Get(HeaderAuthorization))
+	testify.Equal(t, "token", f.config.Headers.Get(headers.Authorization))
 }
 
 func TestSetAccept(t *testing.T) {
 	f := New()
 	f.SetAccept("application/json")
-	testify.Equal(t, "application/json", f.config.Headers.Get(HeaderAccept))
+	testify.Equal(t, "application/json", f.config.Headers.Get(headers.Accept))
 }
 
 func TestSetContentType(t *testing.T) {
 	f := New()
 	f.SetContentType("application/json")
-	testify.Equal(t, "application/json", f.config.Headers.Get(HeaderContentType))
+	testify.Equal(t, "application/json", f.config.Headers.Get(headers.ContentType))
 }
 
 func TestSetReferrer(t *testing.T) {
 	f := New()
 	f.SetReferrer("https://httpbin.zcorky.com")
-	testify.Equal(t, "https://httpbin.zcorky.com", f.config.Headers.Get(HeaderReferrer))
+	testify.Equal(t, "https://httpbin.zcorky.com", f.config.Headers.Get(headers.Referrer))
 }
 
 func TestSetCacheControl(t *testing.T) {
 	f := New()
 	f.SetCacheControl("no-cache")
-	testify.Equal(t, "no-cache", f.config.Headers.Get(HeaderCacheControl))
+	testify.Equal(t, "no-cache", f.config.Headers.Get(headers.CacheControl))
 }
 
 func TestSetAcceptEncoding(t *testing.T) {
 	f := New()
 	f.SetAcceptEncoding("gzip")
-	testify.Equal(t, "gzip", f.config.Headers.Get(HeaderAcceptEncoding))
+	testify.Equal(t, "gzip", f.config.Headers.Get(headers.AcceptEncoding))
 }
 
 func TestSetAcceptLanguage(t *testing.T) {
 	f := New()
 	f.SetAcceptLanguage("zh-CN")
-	testify.Equal(t, "zh-CN", f.config.Headers.Get(HeaderAcceptLanguage))
+	testify.Equal(t, "zh-CN", f.config.Headers.Get(headers.AcceptLanguage))
 }
 
 func TestSetProxy(t *testing.T) {

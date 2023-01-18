@@ -1,5 +1,7 @@
 package fetch
 
+import "github.com/go-zoox/headers"
+
 // DefaultConfig returns the default config
 func DefaultConfig() *Config {
 	config := &Config{
@@ -10,7 +12,7 @@ func DefaultConfig() *Config {
 		Timeout: Timeout,
 	}
 
-	config.Headers[HeaderUserAgent] = DefaultUserAgent()
+	config.Headers[headers.UserAgent] = DefaultUserAgent()
 
 	return config
 }

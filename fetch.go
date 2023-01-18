@@ -9,6 +9,8 @@ import (
 	"path"
 	"strings"
 	"time"
+
+	"github.com/go-zoox/headers"
 )
 
 // Fetch is the Fetch Client
@@ -127,7 +129,7 @@ func (f *Fetch) SetTimeout(timeout time.Duration) *Fetch {
 
 // SetUserAgent sets the user agent
 func (f *Fetch) SetUserAgent(userAgent string) *Fetch {
-	return f.SetHeader(HeaderUserAgent, userAgent)
+	return f.SetHeader(headers.UserAgent, userAgent)
 }
 
 // SetBasicAuth sets the basic auth username and password
@@ -142,26 +144,26 @@ func (f *Fetch) SetBearToken(token string) *Fetch {
 
 // SetAuthorization sets the authorization token
 func (f *Fetch) SetAuthorization(token string) *Fetch {
-	return f.SetHeader(HeaderAuthorization, token)
+	return f.SetHeader(headers.Authorization, token)
 }
 
 // SetCookie sets the cookie
 func (f *Fetch) SetCookie(key, value string) *Fetch {
-	origin := f.config.Headers.Get(HeaderCookie)
+	origin := f.config.Headers.Get(headers.Cookie)
 
 	cookie := newCookie(origin)
 	cookie.Set(key, value)
 
-	return f.SetHeader(HeaderCookie, cookie.String())
+	return f.SetHeader(headers.Cookie, cookie.String())
 }
 
 // SetProxy sets the proxy
-//	support http, https, socks5
-//  example:
-//		http://127.0.0.1:17890
-//	  https://127.0.0.1:17890
-// 	  socks5://127.0.0.1:17890
 //
+//		support http, https, socks5
+//	 example:
+//			http://127.0.0.1:17890
+//		  https://127.0.0.1:17890
+//		  socks5://127.0.0.1:17890
 func (f *Fetch) SetProxy(proxy string) *Fetch {
 	// validdate proxy
 	_, err := url.Parse(proxy)
@@ -176,32 +178,32 @@ func (f *Fetch) SetProxy(proxy string) *Fetch {
 
 // SetAccept sets the accept header
 func (f *Fetch) SetAccept(accept string) *Fetch {
-	return f.SetHeader(HeaderAccept, accept)
+	return f.SetHeader(headers.Accept, accept)
 }
 
 // SetContentType ...
 func (f *Fetch) SetContentType(contentType string) *Fetch {
-	return f.SetHeader(HeaderContentType, contentType)
+	return f.SetHeader(headers.ContentType, contentType)
 }
 
 // SetReferrer sets the referrer
 func (f *Fetch) SetReferrer(referrer string) *Fetch {
-	return f.SetHeader(HeaderReferrer, referrer)
+	return f.SetHeader(headers.Referrer, referrer)
 }
 
 // SetCacheControl sets the cache control
 func (f *Fetch) SetCacheControl(cacheControl string) *Fetch {
-	return f.SetHeader(HeaderCacheControl, cacheControl)
+	return f.SetHeader(headers.CacheControl, cacheControl)
 }
 
 // SetAcceptEncoding sets the accept encoding
 func (f *Fetch) SetAcceptEncoding(acceptEncoding string) *Fetch {
-	return f.SetHeader(HeaderAcceptEncoding, acceptEncoding)
+	return f.SetHeader(headers.AcceptEncoding, acceptEncoding)
 }
 
 // SetAcceptLanguage sets the accept language
 func (f *Fetch) SetAcceptLanguage(acceptLanguage string) *Fetch {
-	return f.SetHeader(HeaderAcceptLanguage, acceptLanguage)
+	return f.SetHeader(headers.AcceptLanguage, acceptLanguage)
 }
 
 // Config returns the config of fetch

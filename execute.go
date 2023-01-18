@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/go-zoox/core-utils/fmt"
+	"github.com/go-zoox/headers"
 
 	"golang.org/x/net/proxy"
 )
@@ -194,7 +195,7 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	// @TODO
 	if _, ok := config.Body.(string); ok {
-		req.Header.Set(HeaderContentType, "text/plain")
+		req.Header.Set(headers.ContentType, "text/plain")
 	}
 
 	for k, v := range config.Headers {
@@ -226,11 +227,11 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	if config.Body != nil {
-		if req.Header.Get(HeaderContentType) == "" {
-			req.Header.Set(HeaderContentType, "application/json")
+		if req.Header.Get(headers.ContentType) == "" {
+			req.Header.Set(headers.ContentType, "application/json")
 		}
 
-		if strings.Contains(req.Header.Get(HeaderContentType), "application/json") {
+		if strings.Contains(req.Header.Get(headers.ContentType), "application/json") {
 			body, err := json.Marshal(config.Body)
 			if err != nil {
 				// panic("error marshalling body: " + err.Error())
@@ -239,7 +240,7 @@ func (f *Fetch) Execute() (*Response, error) {
 
 			// req.Header.Set(HeaderContentTye, "application/json")
 			req.Body = ioutil.NopCloser(bytes.NewReader(body))
-		} else if strings.Contains(req.Header.Get(HeaderContentType), "application/x-www-form-urlencoded") {
+		} else if strings.Contains(req.Header.Get(headers.ContentType), "application/x-www-form-urlencoded") {
 			body := url.Values{}
 			if kv, ok := config.Body.(map[string]string); ok {
 				for k, v := range kv {
@@ -252,7 +253,7 @@ func (f *Fetch) Execute() (*Response, error) {
 			// req.Header.Set(HeaderContentTye, "application/x-www-form-urlencoded")
 			// req.Body = ioutil.NopCloser(bytes.NewReader(body))
 			req.Body = ioutil.NopCloser(strings.NewReader(body.Encode()))
-		} else if strings.Contains(req.Header.Get(HeaderContentType), "multipart/form-data") {
+		} else if strings.Contains(req.Header.Get(headers.ContentType), "multipart/form-data") {
 			if values, ok := config.Body.(map[string]interface{}); ok {
 				var b bytes.Buffer
 				w := multipart.NewWriter(&b)
@@ -297,7 +298,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					}
 				}
 				w.Close()
-				req.Header.Set(HeaderContentType, w.FormDataContentType())
+				req.Header.Set(headers.ContentType, w.FormDataContentType())
 				req.Body = ioutil.NopCloser(&b)
 			} else if values, ok := config.Body.(map[string]string); ok {
 				var b bytes.Buffer
@@ -315,7 +316,7 @@ func (f *Fetch) Execute() (*Response, error) {
 					continue
 				}
 				w.Close()
-				req.Header.Set(HeaderContentType, w.FormDataContentType())
+				req.Header.Set(headers.ContentType, w.FormDataContentType())
 				req.Body = ioutil.NopCloser(&b)
 			} else {
 				return nil, errors.New(ErrInvalidBodyMultipart.Error() + ": must be map[string]interface{} or map[string]string")
@@ -352,7 +353,7 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	// Check that the server actually sent compressed data
 	var reader io.ReadCloser
-	switch resp.Header.Get(HeaderContentEncoding) {
+	switch resp.Header.Get(headers.ContentEncoding) {
 	case "gzip":
 		reader, err = gzip.NewReader(resp.Body)
 		if err != nil {

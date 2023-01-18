@@ -1,6 +1,10 @@
 package fetch
 
-import "io"
+import (
+	"io"
+
+	"github.com/go-zoox/headers"
+)
 
 // Head is http.head
 func (f *Fetch) Head(url string, config ...*Config) *Fetch {
@@ -53,7 +57,7 @@ func (f *Fetch) Delete(url string, config ...*Config) *Fetch {
 // Download downloads file by url
 func (f *Fetch) Download(url string, filepath string, config ...*Config) *Fetch {
 	return f.
-		SetHeader(HeaderAcceptEncoding, "gzip").
+		SetHeader(headers.AcceptEncoding, "gzip").
 		SetConfig(config...).
 		SetMethod(GET).
 		SetURL(url).
@@ -66,7 +70,7 @@ func (f *Fetch) Upload(url string, file io.Reader, config ...*Config) *Fetch {
 		SetConfig(config...).
 		SetMethod(POST).
 		SetURL(url).
-		SetHeader(HeaderContentType, "multipart/form-data").
+		SetHeader(headers.ContentType, "multipart/form-data").
 		SetBody(map[string]interface{}{
 			"file": file,
 		})

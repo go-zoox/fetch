@@ -11,6 +11,8 @@ github.com/go-playground/validator/v10 v10.4.1 h1:pH2c5ADXtd66mxoE0Zm9SUhxE20r7a
 github.com/go-playground/validator/v10 v10.4.1/go.mod h1:nlOn6nFhuKACm19sB/8EGNn9GlaMV7XkbRSipzJ0Ii4=
 github.com/go-zoox/core-utils v1.0.13 h1:aI20hoVvPjVfJSgy01XUliEdIvvMmdlvEcrXBg7Pbkc=
 github.com/go-zoox/core-utils v1.0.13/go.mod h1:EknM3KLL6/kagL95wZbWE7mRRcYCG/fHqiJ/EH0ihAs=
+github.com/go-zoox/headers v1.0.4 h1:dkAUngO2bp7L28VZ80t1IezwOB8xkFfNKJ2IhpZY/2Y=
+github.com/go-zoox/headers v1.0.4/go.mod h1:WEgEbewswEw4n4qS1iG68Kn/vOQVCAKGwwuZankc6so=
 github.com/go-zoox/testify v1.0.0 h1:zXuj+JMcudM/dWk8HgMfCKpGYDcyHbTUBGxH35SGubU=
 github.com/go-zoox/testify v1.0.0/go.mod h1:6+UZ2gOcwcnUvR5lclGRnLrE3/mLoQMAGExjrZgs3aA=
 github.com/goccy/go-yaml v1.9.5 h1:Eh/+3uk9kLxG4koCX6lRMAPS1OaMSAi+FJcya0INdB0=

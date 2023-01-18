@@ -4,6 +4,8 @@ go 1.18
 
 require (
 	github.com/go-zoox/core-utils v1.0.13
+	github.com/go-zoox/headers v1.0.4
+	github.com/go-zoox/testify v1.0.0
 	github.com/goccy/go-yaml v1.9.5
 	github.com/tidwall/gjson v1.14.0
 	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
@@ -11,7 +13,6 @@ require (
 
 require (
 	github.com/fatih/color v1.13.0 // indirect
-	github.com/go-zoox/testify v1.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
