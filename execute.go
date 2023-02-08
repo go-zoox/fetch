@@ -36,7 +36,9 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	if os.Getenv(EnvDEBUG) != "" {
-		fmt.PrintJSON("[GOZOOX_FETCH][DEBUG][Request]", config)
+		if err := fmt.PrintJSON("[GOZOOX_FETCH][DEBUG][Request]", config); err != nil {
+			fmt.Println("[warn] failed to fmt.PrintJSON:", err, config)
+		}
 	}
 
 	fullURL := config.URL
@@ -321,6 +323,17 @@ func (f *Fetch) Execute() (*Response, error) {
 			} else {
 				return nil, errors.New(ErrInvalidBodyMultipart.Error() + ": must be map[string]interface{} or map[string]string")
 			}
+		} else if strings.Contains(req.Header.Get(headers.ContentType), "application/octet-stream") {
+			if config.Body == nil {
+				return nil, fmt.Errorf("octet-stream body is required")
+			}
+
+			body, ok := config.Body.(io.ReadCloser)
+			if !ok && body != nil {
+				body = io.NopCloser(body)
+			}
+
+			req.Body = body
 		} else {
 			if _, ok := config.Body.(string); !ok {
 				return nil, ErrorInvalidBody

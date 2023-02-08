@@ -40,7 +40,6 @@ func (r *Response) String() string {
 			} else {
 				fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", string(b))
 			}
-
 		} else {
 			fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", s)
 		}
