@@ -186,6 +186,8 @@ func (f *Fetch) Execute() (*Response, error) {
 				TLSHandshakeTimeout:   10 * time.Second,
 				ExpectContinueTimeout: 1 * time.Second,
 			}
+		default:
+			return nil, fmt.Errorf("unsupport proxy(%s)", config.Proxy)
 		}
 	}
 
