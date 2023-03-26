@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/go-zoox/headers"
-	"github.com/goccy/go-yaml"
 	"github.com/tidwall/gjson"
+	"gopkg.in/yaml.v3"
 )
 
 // Response is the fetch response
