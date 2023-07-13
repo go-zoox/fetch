@@ -406,8 +406,9 @@ func (f *Fetch) Execute() (*Response, error) {
 
 		if f.config.OnProgress != nil {
 			progress := &Progress{
-				Total:   resp.ContentLength,
-				Current: 0,
+				Total:    resp.ContentLength,
+				Current:  0,
+				Reporter: *f.config.OnProgress,
 			}
 
 			_, err = io.Copy(io.MultiWriter(file, progress), reader)
