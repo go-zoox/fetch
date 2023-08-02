@@ -383,6 +383,10 @@ func (f *Fetch) Execute() (*Response, error) {
 		defer reader.Close()
 	}
 
+	if config.BasicAuth.Username != "" || config.BasicAuth.Password != "" {
+		f.SetBasicAuth(config.BasicAuth.Username, config.BasicAuth.Password)
+	}
+
 	if config.IsSession {
 		cookies := resp.Cookies()
 		for _, cookie := range cookies {
