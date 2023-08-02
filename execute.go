@@ -222,6 +222,9 @@ func (f *Fetch) Execute() (*Response, error) {
 		}
 	}
 	req.URL.RawQuery = query.Encode()
+	if config.Username != "" || config.Password != "" {
+		req.URL.User = url.UserPassword(config.Username, config.Password)
+	}
 
 	// if GET, ignore Body
 	if config.Body != nil && config.Method == GET {
@@ -381,6 +384,10 @@ func (f *Fetch) Execute() (*Response, error) {
 
 	if !config.IsStream {
 		defer reader.Close()
+	}
+
+	if config.BasicAuth.Username != "" || config.BasicAuth.Password != "" {
+		f.SetBasicAuth(config.BasicAuth.Username, config.BasicAuth.Password)
 	}
 
 	if config.IsSession {
