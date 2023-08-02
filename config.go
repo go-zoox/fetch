@@ -50,6 +50,9 @@ type Config struct {
 	OnProgress *func(percent int64, current, total int64)
 	//
 	BasicAuth BasicAuth
+	//
+	Username string
+	Password string
 }
 
 type BasicAuth struct {
@@ -166,6 +169,11 @@ func (c *Config) Merge(config *Config) {
 
 	if config.BasicAuth.Username != "" || config.BasicAuth.Password != "" {
 		c.BasicAuth = config.BasicAuth
+	}
+
+	if config.Username != "" || config.Password != "" {
+		c.Username = config.Username
+		c.Password = config.Password
 	}
 }
 

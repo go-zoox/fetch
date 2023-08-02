@@ -222,6 +222,9 @@ func (f *Fetch) Execute() (*Response, error) {
 		}
 	}
 	req.URL.RawQuery = query.Encode()
+	if config.Username != "" || config.Password != "" {
+		req.URL.User = url.UserPassword(config.Username, config.Password)
+	}
 
 	// if GET, ignore Body
 	if config.Body != nil && config.Method == GET {
