@@ -134,7 +134,7 @@ func (f *Fetch) SetUserAgent(userAgent string) *Fetch {
 
 // SetBasicAuth sets the basic auth username and password
 func (f *Fetch) SetBasicAuth(username, password string) *Fetch {
-	return f.SetAuthorization("Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password)))
+	return f.SetAuthorization("Basic " + base64.RawURLEncoding.EncodeToString([]byte(username+":"+password)))
 }
 
 // SetBearToken sets the bear token
