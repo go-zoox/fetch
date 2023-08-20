@@ -415,7 +415,7 @@ func (f *Fetch) Execute() (*Response, error) {
 			progress := &Progress{
 				Total:    resp.ContentLength,
 				Current:  0,
-				Reporter: *f.config.OnProgress,
+				Reporter: f.config.OnProgress,
 			}
 
 			_, err = io.Copy(io.MultiWriter(file, progress), reader)

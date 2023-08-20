@@ -47,7 +47,7 @@ type Config struct {
 	//
 	Context context.Context
 	//
-	OnProgress *func(percent int64, current, total int64)
+	OnProgress func(percent int64, current, total int64)
 	//
 	BasicAuth BasicAuth
 	//

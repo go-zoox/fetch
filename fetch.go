@@ -74,7 +74,7 @@ func (f *Fetch) SetDownloadFilePath(filepath string) *Fetch {
 
 // SetProgressCallback sets the progress callback
 func (f *Fetch) SetProgressCallback(callback func(percent int64, current, total int64)) *Fetch {
-	f.config.OnProgress = &callback
+	f.config.OnProgress = callback
 	return f
 }
 
