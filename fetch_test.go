@@ -222,7 +222,7 @@ func TestSetUserAgent(t *testing.T) {
 func TestConfigSetBasicAuth(t *testing.T) {
 	f := New()
 	f.SetBasicAuth("user", "passwd")
-	testify.Equal(t, "Basic dXNlcjpwYXNzd2Q", f.config.Headers.Get(headers.Authorization))
+	testify.Equal(t, "Basic dXNlcjpwYXNzd2Q=", f.config.Headers.Get(headers.Authorization))
 }
 
 func TestConfigSetBearToken(t *testing.T) {
