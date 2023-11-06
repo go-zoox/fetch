@@ -7,7 +7,7 @@ require (
 	github.com/go-zoox/headers v1.0.6
 	github.com/go-zoox/testify v1.0.0
 	github.com/tidwall/gjson v1.14.4
-	golang.org/x/net v0.10.0
+	golang.org/x/net v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
