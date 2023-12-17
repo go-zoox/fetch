@@ -20,6 +20,7 @@ import (
 
 	"github.com/go-zoox/core-utils/fmt"
 	"github.com/go-zoox/headers"
+	"github.com/tidwall/gjson"
 
 	"golang.org/x/net/proxy"
 )
@@ -450,6 +451,19 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	// fmt.Println("response: ", string(body))
+
+	if os.Getenv(EnvDEBUG) != "" {
+		if strings.Contains(resp.Header.Get(headers.ContentType), "application/json") {
+			b, err := json.MarshalIndent(gjson.Parse(string(body)).Value(), "", "  ")
+			if err != nil {
+				fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", string(body))
+			} else {
+				fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", string(b))
+			}
+		} else {
+			fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", string(body))
+		}
+	}
 
 	return &Response{
 		Status:  resp.StatusCode,

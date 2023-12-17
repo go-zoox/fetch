@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
-	"strings"
 
 	"github.com/go-zoox/headers"
 	"github.com/tidwall/gjson"
@@ -30,22 +28,7 @@ type Response struct {
 
 // String returns the body as string
 func (r *Response) String() string {
-	s := string(r.Body)
-
-	if os.Getenv(EnvDEBUG) != "" {
-		if strings.Contains(r.Headers.Get(headers.ContentType), "application/json") {
-			b, err := json.MarshalIndent(gjson.Parse(s).Value(), "", "  ")
-			if err != nil {
-				fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", s)
-			} else {
-				fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", string(b))
-			}
-		} else {
-			fmt.Println("[GOZOOX_FETCH][DEBUG][Response]", s)
-		}
-	}
-
-	return s
+	return string(r.Body)
 }
 
 // Value returns the body as gjson.Result
