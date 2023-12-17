@@ -47,7 +47,7 @@ type Config struct {
 	//
 	Context context.Context
 	//
-	OnProgress func(percent int64, current, total int64)
+	OnProgress OnProgress
 	//
 	BasicAuth BasicAuth
 	//
@@ -59,6 +59,19 @@ type Config struct {
 type BasicAuth struct {
 	Username string
 	Password string
+}
+
+// OnProgress is the progress callback
+type OnProgress func(percent int64, current, total int64)
+
+// MarshalJSON returns the json string
+func (op *OnProgress) MarshalJSON() ([]byte, error) {
+	return []byte("null"), nil
+}
+
+// UnmarshalJSON unmarshals the json string
+func (op *OnProgress) UnmarshalJSON(data []byte) error {
+	return nil
 }
 
 // Merge merges the config with the given config
