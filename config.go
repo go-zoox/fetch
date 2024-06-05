@@ -189,6 +189,10 @@ func (c *Config) Merge(config *Config) {
 		c.Username = config.Username
 		c.Password = config.Password
 	}
+
+	if config.Context != nil {
+		c.Context = config.Context
+	}
 }
 
 // Clone returns a clone of the config
