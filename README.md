@@ -120,7 +120,7 @@ import (
 )
 
 func main() {
-  response, _ := fetch.Post("https://httpbin.zcorky.com/post", &fetch.Config{
+  response, err := fetch.Post("https://httpbin.zcorky.com/post", &fetch.Config{
 		Body: map[string]interface{}{
 			"foo":     "bar",
 			"foo2":    "bar2",
