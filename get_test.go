@@ -84,3 +84,20 @@ func Test_Get_With_Query(t *testing.T) {
 		t.Error("Expected foo2 bar2, got", response.Get("query.foo2").String())
 	}
 }
+
+func Test_Get_With_BasicAuth_In_URL(t *testing.T) {
+	response, err := Get("https://user1:pass1@httpbin.zcorky.com/headers")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+
+	if response.Status != 200 {
+		t.Error("Expected status code 200, got", response.Status)
+	}
+
+	if response.Get("headers.authorization").String() != "Basic dXNlcjE6cGFzczE=" {
+		t.Error("Expected Authorization Basic dXNlcjE6cGFzczE=, got", response.Get("headers.authorization").String())
+	}
+
+	fmt.Println(response.String())
+}
