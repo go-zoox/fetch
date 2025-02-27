@@ -13,6 +13,7 @@ import (
 	"mime/multipart"
 	"net"
 	"net/http"
+	"net/textproto"
 	"net/url"
 	"os"
 	"strings"
@@ -283,25 +284,12 @@ func (f *Fetch) Execute() (*Response, error) {
 						continue
 					}
 
-					if file, ok := v.(io.Reader); ok {
-						// @TODO
-						// filename := file.Name()
-						filename := k
-						type File interface {
-							Name() string
-						}
-
-						if f, ok := file.(File); ok {
-							filename = f.Name()
-						}
-
-						if fw, err = w.CreateFormFile(k, filename); err != nil {
+					if f, ok := v.(io.ReadCloser); ok {
+						// fix multipart form file content type
+						if err := createFormFile(w, f, k); err != nil {
 							return nil, err
 						}
 
-						if _, err = io.Copy(fw, file); err != nil {
-							return nil, err
-						}
 						continue
 					}
 				}
@@ -472,4 +460,96 @@ func (f *Fetch) Execute() (*Response, error) {
 		//
 		Request: config,
 	}, nil
+}
+
+// @TODO for multipart/form-data with file
+//
+//		Issue:
+//			mime/multipart:CreateFormFile has a fixed content type(application/octet-stream),
+//			does not support auto-detect content type
+//
+//		Need: Create MIME encoded form files that auto-detect the content type.
+//
+//		Reference:
+//	 	1. https://groups.google.com/g/golang-nuts/c/HwOYproYQqA
+//	 	2. https://github.com/go-openapi/runtime/pull/170/files
+
+// NamedReadCloser is a named reader
+type NamedReadCloser interface {
+	io.ReadCloser
+
+	Name() string
+}
+
+func escapeQuotes(s string) string {
+	return strings.NewReplacer("\\", "\\\\", `"`, "\\\"").Replace(s)
+}
+
+func createFormFile(w *multipart.Writer, reader io.ReadCloser, fieldname string) error {
+	buf := bytes.NewBuffer([]byte{})
+	filename := ""
+	if f, ok := reader.(NamedReadCloser); ok {
+		filename = f.Name()
+	}
+
+	// Need to read the data so that we can detect the content type
+	if _, err := io.Copy(buf, reader); err != nil {
+		return err
+	}
+	fileBytes := buf.Bytes()
+	fileContentType := http.DetectContentType(fileBytes)
+
+	newFi := CreateNamedReader(filename, buf)
+
+	h := make(textproto.MIMEHeader)
+	if filename == "" {
+		h.Set("Content-Disposition",
+			fmt.Sprintf(`form-data; name="%s"`, escapeQuotes(fieldname)))
+	} else {
+		h.Set("Content-Disposition",
+			fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
+				escapeQuotes(fieldname), escapeQuotes(filename)))
+	}
+	h.Set("Content-Type", fileContentType)
+
+	if fw, err := w.CreatePart(h); err != nil {
+		return err
+	} else {
+		if _, err = io.Copy(fw, newFi); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// CreateNamedReader creates a named reader
+//
+//		multipart.File, that is Request.ParseMultipartForm, does not have a name
+//		so we need to create a named reader to get the file name
+//	 when uploading a file with multipart/form-data
+func CreateNamedReader(name string, rdr io.Reader) NamedReadCloser {
+	rc, ok := rdr.(io.ReadCloser)
+	if !ok {
+		rc = io.NopCloser(rdr)
+	}
+	return &namedReadCloser{
+		name: name,
+		cr:   rc,
+	}
+}
+
+type namedReadCloser struct {
+	name string
+	cr   io.ReadCloser
+}
+
+func (n *namedReadCloser) Close() error {
+	return n.cr.Close()
+}
+func (n *namedReadCloser) Read(p []byte) (int, error) {
+	return n.cr.Read(p)
+}
+func (n *namedReadCloser) Name() string {
+	return n.name
 }
