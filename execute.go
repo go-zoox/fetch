@@ -512,12 +512,13 @@ func createFormFile(w *multipart.Writer, reader io.ReadCloser, fieldname string)
 	}
 	h.Set("Content-Type", fileContentType)
 
-	if fw, err := w.CreatePart(h); err != nil {
+	fw, err := w.CreatePart(h)
+	if err != nil {
 		return err
-	} else {
-		if _, err = io.Copy(fw, newFi); err != nil {
-			return err
-		}
+	}
+
+	if _, err = io.Copy(fw, newFi); err != nil {
+		return err
 	}
 
 	return nil
