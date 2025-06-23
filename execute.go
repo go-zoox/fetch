@@ -16,6 +16,7 @@ import (
 	"net/textproto"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -349,6 +350,23 @@ func (f *Fetch) Execute() (*Response, error) {
 		tr.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
 			return net.Dial("unix", config.UnixDomainSocket)
 		}
+	}
+
+	if config.CompressRequest {
+		var buf bytes.Buffer
+		gz := gzip.NewWriter(&buf)
+
+		// Compress the request body
+		if _, err := io.Copy(gz, req.Body); err != nil {
+			return nil, fmt.Errorf("failed to compress request body: %v", err)
+		}
+		if err := gz.Close(); err != nil {
+			return nil, fmt.Errorf("failed to close gzip writer: %v", err)
+		}
+
+		req.Header.Set(headers.ContentEncoding, "gzip")
+		req.Body = io.NopCloser(&buf)
+		req.Header.Set(headers.ContentLength, strconv.Itoa(buf.Len()))
 	}
 
 	resp, err := client.Do(req)
