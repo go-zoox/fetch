@@ -10,8 +10,8 @@ func Head(url string, config ...interface{}) (*Response, error) {
 	}
 
 	if c.Body != nil {
-        panic("Request with HEAD method cannot have body")
-    }
+		panic("Request with HEAD method cannot have body")
+	}
 
 	return New().Head(url, c).Execute()
 }

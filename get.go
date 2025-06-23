@@ -10,8 +10,8 @@ func Get(url string, config ...interface{}) (*Response, error) {
 	}
 
 	if c.Body != nil {
-        panic("Request with GET method cannot have body")
-    }
+		panic("Request with GET method cannot have body")
+	}
 
 	return New().Get(url, c).Execute()
 }
