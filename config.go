@@ -53,6 +53,8 @@ type Config struct {
 	//
 	Username string
 	Password string
+	//
+	CompressRequest bool
 }
 
 // BasicAuth is the basic auth
@@ -192,6 +194,10 @@ func (c *Config) Merge(config *Config) {
 
 	if config.Context != nil {
 		c.Context = config.Context
+	}
+
+	if config.CompressRequest {
+		c.CompressRequest = config.CompressRequest
 	}
 }
 
