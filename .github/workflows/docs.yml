@@ -29,20 +29,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          cache-dependency-path: docs/package-lock.json
+          cache: pnpm
+          cache-dependency-path: docs/pnpm-lock.yaml
 
       - name: Install dependencies
         working-directory: docs
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         working-directory: docs
-        run: npm run build
+        run: pnpm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
