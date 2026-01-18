@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Documentation for go-zoox/fetch",
   "type": "module",
+  "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
