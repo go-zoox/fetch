@@ -1,0 +1,14 @@
+{
+  "name": "fetch-docs",
+  "version": "1.0.0",
+  "description": "Documentation for go-zoox/fetch",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0"
+  }
+}
