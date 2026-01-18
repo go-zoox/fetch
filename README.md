@@ -10,45 +10,53 @@
 [![Release](https://img.shields.io/github/tag/go-zoox/fetch.svg?label=Release)](https://github.com/go-zoox/fetch/releases)
 
 ## Features
+
 ### Main API
+
 - [x] Make HTTP requests
 - [x] Easy JSON Response
-- [ ] GZip support
+- [x] GZip support
   - [x] Decode GZip response
-  - [ ] Encode GZip request (Upload File with GZip)
+  - [x] Encode GZip request (Upload File with GZip)
 - [x] HTTP/2 support
 - [x] TLS
   - [x] Custom TLS Ca Certificate (Self signed certificate) [Example](https://github.com/go-zoox/examples/tree/master/https/fetch)
-	- [x] Custom Client Cert and Key for two-way authentication (Client Cert and Key)
+  - [x] Custom Client Cert and Key for two-way authentication (Client Cert and Key)
 - [x] Simple Auth Methods
   - [x] Basic Auth
   - [x] Bearer Auth
 - [x] Support cancel (using context)
 
 ### Timeouts and retries
+
 - [x] Support timeout
 - [x] Support retry on failure
 
 ### Progress
+
 - [x] Support progress and progress events
 
 ### File upload and download
+
 - [x] Download files easily
 - [x] Upload files easily
 
 ### Cache, Proxy and UNIX sockets
+
 - [ ] [RFC compliant caching](https://github.com/sindresorhus/got/blob/main/documentation/cache.md)
 - [x] Proxy support
   - [x] Environment variables (HTTP_PROXY/HTTPS_PROXY/SOCKS_PROXY)
   - [x] Custom proxy
 - [x] UNIX Domain Sockets
-	- [Example: HTTP](https://github.com/go-zoox/examples/tree/master/unix-domain-socket/http)
-	- [Example: HTTPs](https://github.com/go-zoox/examples/tree/master/unix-domain-socket/https)
+  - [Example: HTTP](https://github.com/go-zoox/examples/tree/master/unix-domain-socket/http)
+  - [Example: HTTPs](https://github.com/go-zoox/examples/tree/master/unix-domain-socket/https)
 
 ### WebDAV
+
 - [ ] WebDAV protocol support
 
 ### Advanced creation
+
 - [ ] Plugin system
 - [ ] Middleware system
 
@@ -61,6 +69,7 @@ go get github.com/go-zoox/fetch
 ```
 
 ## Methods
+
 - [x] GET
 - [x] POST
 - [x] PUT
@@ -176,6 +185,7 @@ func main() {
   fmt.Println(response.JSON())
 }
 ```
+
 ### Delete
 
 ```go
