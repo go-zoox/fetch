@@ -85,6 +85,14 @@ func (f *Fetch) Execute() (*Response, error) {
 	}
 
 	transport := http.DefaultTransport
+	if config.TLSCaCert != nil || (config.TLSCert != nil && config.TLSKey != nil) ||
+		config.TLSInsecureSkipVerify || (config.UnixDomainSocket != "" && config.Proxy == "") {
+		tr := transport.(*http.Transport).Clone()
+		// A private transport has no later request to reuse its idle connections.
+		tr.DisableKeepAlives = true
+		defer tr.CloseIdleConnections()
+		transport = tr
+	}
 	if config.TLSCaCert != nil {
 		pool := x509.NewCertPool()
 		pool.AppendCertsFromPEM(config.TLSCaCert)
